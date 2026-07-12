@@ -66,5 +66,14 @@ class ModulController extends Controller
     $modul_update->save();
 
     return redirect('/modul');
+    
+}
+    public function show($id)
+{
+    // Ambil data modul beserta seluruh materinya
+    $modul = Modul::with('materis')->findOrFail($id);
+    
+    // Kirim datanya ke halaman 'belajar'
+    return view('belajar', compact('modul'));
 }
 }
