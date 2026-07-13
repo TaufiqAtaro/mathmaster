@@ -2,57 +2,86 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Modul MathMaster</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathMaster - Belajar Matematika Mudah</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="p-8 bg-gray-100">
-    
-    <div class="max-w-4xl mx-auto">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">Daftar Modul MathMaster</h1>
-            <div class="space-x-2">
-                <a href="/modul/tambah" class="bg-green-600 text-white px-4 py-2 rounded font-bold hover:bg-green-700 shadow">+ Tambah Modul</a>
-                <a href="/materi/tambah" class="bg-purple-600 text-white px-4 py-2 rounded font-bold hover:bg-purple-700 shadow">+ Tambah Materi</a>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+    <!-- Navbar Atas -->
+    <nav class="bg-purple-700 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-2xl font-black tracking-tight">MathMaster</a>
+            <div>
+            @if (Route::has('login'))
+            @auth
+                <!-- Jika yang login adalah Admin -->
+                @if(auth()->user()->role === 'admin')
+                    <a href="{{ url('/dashboard') }}" class="hover:text-purple-200 font-semibold mr-4">Dashboard Admin</a>
+                <!-- Jika yang login adalah Siswa -->
+                @else
+                    <span class="text-purple-200 font-medium mr-4">Halo, {{ auth()->user()->name }}!</span>
+                @endif
+
+                <!-- Tombol Logout (Bisa dipakai Admin & Siswa langsung dari depan) -->
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full font-bold text-sm shadow-sm transition">Log Out</button>
+                </form>
+            @else
+                <!-- Jika belum login sama sekali -->
+                <a href="{{ route('login') }}" class="hover:text-purple-200 font-semibold mr-5">Log in</a>
+                @if (Route::has('register'))
+                    <a href="{{ route('register') }}" class="bg-white text-purple-700 px-5 py-2 rounded-full font-bold hover:bg-gray-100 shadow-sm transition">Register</a>
+                @endif
+            @endauth
+        @endif
             </div>
         </div>
-        
-        <div class="grid gap-4">
-            @foreach($data_modul as $modul)
-                <div class="p-5 bg-white shadow-md rounded-lg border-l-4 border-blue-500 relative">
-                    <h2 class="font-bold text-xl text-gray-800">{{ $modul->judul_modul }}</h2>
-                    
-                    <span class="inline-block mt-2 mb-3 px-3 py-1 bg-blue-100 text-blue-700 text-sm font-semibold rounded-full">
-                        Untuk Kelas {{ $modul->tingkat_kelas }}
-                    </span>
-                    
-                    <p class="text-gray-600 mb-4">{{ $modul->deskripsi }}</p>
+    </nav>
 
-                    <!-- INI ADALAH BAGIAN RELASINYA -->
-                    <div class="mt-4 pt-4 border-t border-gray-200">
-                        <h3 class="font-bold text-sm text-gray-700 mb-2">Daftar Materi (Bab):</h3>
-                        <ul class="list-disc pl-5 text-sm text-gray-600">
-                            @forelse($modul->materis as $materi)
-                                <li><b>{{ $materi->judul_materi }}</b> - {{ $materi->isi_materi }}</li>
-                            @empty
-                                <li class="text-gray-400 italic">Belum ada materi di modul ini.</li>
-                            @endforelse
-                        </ul>
+    <!-- Hero Section -->
+    <header class="container mx-auto text-center py-20 px-4">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-5">Belajar Matematika Jadi Lebih Menyenangkan!</h1>
+        <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">Jelajahi berbagai modul interaktif yang disiapkan khusus untuk membantu siswa SMP memahami konsep-konsep matematika dengan mudah dan menyenangkan.</p>
+    </header>
+
+    <!-- Area Daftar Modul -->
+    <main class="container mx-auto px-4 pb-20">
+        <!-- Grid Modul Siswa -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach($moduls as $modul)
+                <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition overflow-hidden border border-gray-100 flex flex-col relative">
+                    
+                    <!-- Area Gambar -->
+                    @if($modul->gambar_modul)
+                        <img src="{{ asset('storage/' . $modul->gambar_modul) }}" alt="Cover" class="w-full h-40 object-contain bg-gray-50 border-b border-gray-100">
+                    @else
+                        <div class="w-full h-40 bg-purple-100 flex items-center justify-center border-b border-purple-200">
+                        </div>
+                    @endif
+
+                    <!-- Area Konten -->
+                    <div class="p-5 flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <h2 class="font-black text-xl text-gray-800">{{ $modul->judul_modul }}</h2>
+                            <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-md shrink-0">
+                                Kls {{ $modul->tingkat_kelas }}
+                            </span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-4 line-clamp-2">{{ $modul->deskripsi }}</p>
                     </div>
 
-                    <!-- Tombol Aksi -->
-                    <a href="/modul/{{ $modul->id }}/edit" class="absolute top-5 right-24 text-yellow-600 hover:text-yellow-800 font-bold text-sm bg-yellow-100 px-3 py-1 rounded-full">Edit</a>
-                    
-                    <form action="/modul/{{ $modul->id }}" method="POST" class="absolute top-5 right-5">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-500 hover:text-red-700 font-bold text-sm bg-red-100 px-3 py-1 rounded-full" onclick="return confirm('Yakin ingin menghapus modul ini?')">
-                            Hapus
-                        </button>
-                    </form>
+                    <!-- Area Tombol Khusus Siswa -->
+                    <div class="p-4 bg-purple-50 border-t border-purple-100 flex justify-center">
+                        <a href="/belajar/{{ $modul->id }}" class="w-full text-center bg-purple-600 text-white font-bold text-sm hover:bg-purple-700 py-2.5 rounded-lg shadow-sm transition">
+                            Mulai Belajar 
+                        </a>
+                    </div>
                 </div>
             @endforeach
         </div>
-    </div>
+    </main>
 
 </body>
 </html>

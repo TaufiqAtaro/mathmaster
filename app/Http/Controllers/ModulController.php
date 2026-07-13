@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\Modul; // Wajib dipanggil agar Controller kenal Model-nya
 
@@ -13,7 +14,7 @@ class ModulController extends Controller
         $data_modul = Modul::all(); 
         
         // Lempar datanya ke file view yang bernama 'modul'
-        return view('modul', compact('data_modul'));
+        return view('kelola_modul', compact('data_modul'));
     }
 
     public function create ()
@@ -22,19 +23,26 @@ class ModulController extends Controller
     }
     public function store(Request $request)
 {
-    // 1. Siapkan baris kosong baru di tabel Modul
-    $modul_baru = new Modul;
-    
-    // 2. Isi kolomnya dengan data yang diketik user di form ($request)
-    $modul_baru->judul_modul = $request->judul_modul;
-    $modul_baru->tingkat_kelas = $request->tingkat_kelas;
-    $modul_baru->deskripsi = $request->deskripsi;
-    
-    // 3. Simpan ke database MySQL!
-    $modul_baru->save();
-    
-    // 4. Kalau sudah sukses, tendang user kembali ke halaman daftar modul
-    return redirect('/modul');
+    // 1. Validasi data (termasuk ngecek apakah file yang diupload beneran gambar, max 2MB)
+    $validated = $request->validate([
+        'judul_modul' => 'required',
+        'tingkat_kelas' => 'required',
+        'deskripsi' => 'required',
+        'gambar_modul' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+    ]);
+
+    // 2. Cek apakah admin mengunggah file gambar
+    if ($request->hasFile('gambar_modul')) {
+        // Simpan gambar ke dalam folder: storage/app/public/cover_modul
+        $path = $request->file('gambar_modul')->store('cover_modul', 'public');
+        // Masukkan path/alamat gambarnya ke dalam array data yang akan disimpan
+        $validated['gambar_modul'] = $path;
+    }
+
+    // 3. Simpan semua data ke database
+    Modul::create($validated);
+
+    return redirect('/kelola-modul')->with('success', 'Modul berhasil ditambahkan!');
 }
 
     public function destroy($id)
@@ -46,7 +54,7 @@ class ModulController extends Controller
     $modul_dihapus->delete();
     
     // 3. Tendang kembali ke halaman daftar modul
-    return redirect('/modul');
+    return redirect('/kelola-modul');
 }
     
     public function edit($id)
@@ -58,15 +66,28 @@ class ModulController extends Controller
 
     public function update(Request $request, $id)
 {
-    // Cari modulnya, timpa isinya dengan request baru, lalu save!
-    $modul_update = Modul::find($id);
-    $modul_update->judul_modul = $request->judul_modul;
-    $modul_update->tingkat_kelas = $request->tingkat_kelas;
-    $modul_update->deskripsi = $request->deskripsi;
-    $modul_update->save();
-
-    return redirect('/modul');
+    $modul = Modul::findOrFail($id);
     
+    $validated = $request->validate([
+        'judul_modul' => 'required',
+        'tingkat_kelas' => 'required',
+        'deskripsi' => 'required',
+        'gambar_modul' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+    ]);
+
+    // Jika admin mengupload gambar baru
+    if ($request->hasFile('gambar_modul')) {
+        // Hapus gambar lama dari server (agar tidak numpuk)
+        if ($modul->gambar_modul) {
+            Storage::disk('public')->delete($modul->gambar_modul);
+        }
+        // Simpan gambar baru
+        $validated['gambar_modul'] = $request->file('gambar_modul')->store('cover_modul', 'public');
+    }
+
+    $modul->update($validated);
+
+    return redirect('/kelola-modul')->with('success', 'Modul berhasil diperbarui!');
 }
     public function show($id)
 {

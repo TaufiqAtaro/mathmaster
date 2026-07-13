@@ -3,14 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory; // 1. Tambahkan baris ini 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Modul extends Model
 {
-    use HasFactory; // 2. Tambahkan baris ini 
+    use HasFactory; 
+
+    // Tambahkan blok fillable ini agar gambar dan data lainnya bisa disimpan
+    protected $fillable = [
+        'judul_modul',
+        'tingkat_kelas',
+        'deskripsi',
+        'gambar_modul',
+    ];
+
     // Hubungkan ke Model Materi
-public function materis()
-{
-    return $this->hasMany(Materi::class);
-}
+    public function materis()
+    {
+        return $this->hasMany(Materi::class);
+    }
 }
