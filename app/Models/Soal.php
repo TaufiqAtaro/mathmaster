@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Materi extends Model
+class Soal extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
 
-    // Hubungkan ke Model Modul
+    // Relasi balik ke Modul
     public function modul()
     {
         return $this->belongsTo(Modul::class);

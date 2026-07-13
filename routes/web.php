@@ -37,10 +37,22 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/kelola-modul/{id}', [ModulController::class, 'update']);
     
     Route::get('/materi/tambah', [MateriController::class, 'create']);
-    Route::post('/materi/simpan', [MateriController::class, 'store']);
+    Route::post('/materi', [\App\Http\Controllers\MateriController::class, 'store']);
+    Route::get('/materi/{id}/edit', [\App\Http\Controllers\MateriController::class, 'edit']);
+    Route::put('/materi/{id}', [\App\Http\Controllers\MateriController::class, 'update']);
+    Route::delete('/materi/{id}', [\App\Http\Controllers\MateriController::class, 'destroy']);
 });
 
 // Rute publik untuk halaman belajar siswa
 Route::get('/belajar/{id}', [ModulController::class, 'show']);
+// Rute untuk menampilkan soal kuis ke siswa
+Route::get('/belajar/{id}/kuis', [\App\Http\Controllers\ModulController::class, 'kuis']);
+
+// Rute untuk memproses jawaban dan menghitung nilai
+Route::post('/belajar/{id}/kuis', [\App\Http\Controllers\ModulController::class, 'submitKuis']);
+
+// Rute Kelola Kuis/Soal (Admin)
+Route::get('/soal/tambah', [\App\Http\Controllers\SoalController::class, 'create']);
+Route::post('/soal', [\App\Http\Controllers\SoalController::class, 'store']);
 
 require __DIR__.'/auth.php';

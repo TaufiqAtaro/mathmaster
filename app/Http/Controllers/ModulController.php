@@ -97,4 +97,42 @@ class ModulController extends Controller
     // Kirim datanya ke halaman 'belajar'
     return view('belajar', compact('modul'));
 }
+    // Fungsi menampilkan halaman kuis
+    public function kuis($id)
+{
+    // Ambil data modul beserta soal-soalnya
+    $modul = Modul::with('soals')->findOrFail($id);
+    return view('kuis', compact('modul'));
+}
+
+    // Fungsi menghitung nilai kuis
+    public function submitKuis(Request $request, $id)
+{
+    $modul = Modul::with('soals')->findOrFail($id);
+    $soals = $modul->soals;
+    
+    // Ambil semua jawaban yang dikirim siswa (format array)
+    $jawabanSiswa = $request->input('jawaban', []); 
+
+    $benar = 0;
+    $totalSoal = $soals->count();
+
+    // Cek kalau belum ada soal sama sekali
+    if ($totalSoal == 0) {
+        return redirect('/belajar/' . $id)->with('error', 'Kuis belum tersedia.');
+    }
+
+    // Hitung jawaban yang benar
+    foreach ($soals as $soal) {
+        if (isset($jawabanSiswa[$soal->id]) && $jawabanSiswa[$soal->id] == $soal->jawaban_benar) {
+            $benar++;
+        }
+    }
+
+    // Rumus sakti nilai: (Benar / Total) * 100
+    $nilai = round(($benar / $totalSoal) * 100);
+
+    // Lempar ke halaman hasil kuis
+    return view('hasil_kuis', compact('modul', 'soals', 'jawabanSiswa', 'nilai', 'benar', 'totalSoal'));
+}
 }

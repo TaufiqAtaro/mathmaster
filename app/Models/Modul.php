@@ -22,4 +22,9 @@ class Modul extends Model
     {
         return $this->hasMany(Materi::class);
     }
+    // Satu modul punya banyak soal kuis
+    public function soals()
+    {
+        return $this->hasMany(Soal::class);
+    }
 }

@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <!-- Grid Modul Menyerupai Welcome.blade.php -->
+        <!-- Grid Modul -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($data_modul as $modul)
                 <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition overflow-hidden border border-gray-100 flex flex-col relative">
@@ -57,7 +57,7 @@
                     <!-- Area Konten -->
                     <div class="p-5 flex-grow">
                         <div class="flex justify-between items-start mb-2">
-                            <h2 class="font-black text-xl text-gray-800">{{ $modul->judul_modul }}</h2>
+                            <h2 class="font-black text-xl text-gray-800">{{ $modul->judul_modul }}</h2> 
                             <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-md shrink-0">
                                 Kls {{ $modul->tingkat_kelas }}
                             </span>
@@ -69,7 +69,21 @@
                             <h3 class="font-bold text-xs text-gray-700 mb-1">Materi di dalam:</h3>
                             <ul class="text-xs text-gray-600 line-clamp-3">
                                 @forelse($modul->materis as $materi)
-                                    <li>• {{ $materi->judul_materi }}</li>
+                                <li class="flex justify-between items-center mb-2">
+                                    <span>{{ $materi->judul_materi }}</span>
+                                    
+                                    <!-- Tombol Edit -->
+                                    <a href="/materi/{{ $materi->id }}/edit" class="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-1 px-3 rounded text-sm shadow-sm transition">
+                                        Edit
+                                    </a>
+                                    <form action="/materi/{{ $materi->id }}" method="POST" class="inline-block m-0" onsubmit="return confirm('Yakin mau menghapus materi ini? File lampiran akan ikut terhapus permanen.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm shadow-sm transition">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </li>
                                 @empty
                                     <li class="italic text-gray-400">Kosong</li>
                                 @endforelse

@@ -70,6 +70,29 @@
                     <div class="text-gray-700 leading-relaxed whitespace-pre-line">
                         {{ $materi->isi_materi }}
                     </div>
+                    <!-- Area Lampiran & Video -->
+                    <div class="mt-8 space-y-6">
+                            
+                            <!-- Tampilkan Video YouTube Jika Ada -->
+                            @if($materi->link_video)
+                                @php
+                                    // Mengubah link YouTube biasa menjadi format Embed secara otomatis
+                                    $embedUrl = str_replace('watch?v=', 'embed/', $materi->link_video);
+                                @endphp
+                                <div class="w-full rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-inner">
+                                    <iframe src="{{ $embedUrl }}" class="w-full h-64 md:h-96" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </div>
+                            @endif
+
+                            <!-- Tampilkan Tombol Download Jika Ada File -->
+                            @if($materi->file_lampiran)
+                                <div>
+                                    <a href="{{ asset('storage/' . $materi->file_lampiran) }}" target="_blank" class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 hover:bg-blue-100 px-5 py-2.5 rounded-lg font-bold text-sm border border-blue-200 transition shadow-sm hover:shadow">
+                                        <span>📎</span> Buka / Unduh Lampiran Materi
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
                 </div>
             @empty
                 <div class="bg-yellow-50 text-yellow-700 p-6 rounded-xl border border-yellow-200 text-center font-medium">
@@ -77,6 +100,18 @@
                 </div>
             @endforelse
         </div>
+
+        <!-- TOMBOL KUIS DITAMBAHKAN DI SINI -->
+        @if($modul->materis->count() > 0)
+        <div class="mt-12 mb-4 bg-purple-50 p-8 rounded-2xl border-2 border-dashed border-purple-300 text-center">
+            <h3 class="text-2xl font-bold text-purple-900 mb-3">Sudah selesai membaca?</h3>
+            <p class="text-purple-700 mb-6">Uji pemahamanmu dengan mengerjakan latihan soal untuk modul ini.</p>
+            <a href="/belajar/{{ $modul->id }}/kuis" class="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black text-xl py-4 px-10 rounded-2xl hover:from-purple-700 hover:to-indigo-700 shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1">
+                Kerjakan Kuis Sekarang
+            </a>
+        </div>
+        @endif
+
     </main>
 
     <footer class="bg-gray-800 text-gray-400 text-center py-6 mt-12">
