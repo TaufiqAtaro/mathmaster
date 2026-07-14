@@ -28,16 +28,20 @@
                 </button>
             </form>
         </div>
-    @if(session('success'))
+
+        @if(session('success'))
             <div class="mb-4 px-4 py-3 bg-green-100 border-l-4 border-green-500 text-green-700 rounded shadow-sm">
                 <span class="font-bold">{{ session('success') }}</span>
             </div>
         @endif
+
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800">Daftar Modul MathMaster</h1>
             <div class="space-x-2">
                 <a href="/kelola-modul/tambah" class="bg-green-600 text-white px-4 py-2 rounded font-bold hover:bg-green-700 shadow">+ Tambah Modul</a>
                 <a href="/materi/tambah" class="bg-purple-600 text-white px-4 py-2 rounded font-bold hover:bg-purple-700 shadow">+ Tambah Materi</a>
+                <!-- Tambahan Tombol Kuis -->
+                <a href="/soal/tambah" class="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 shadow">+ Tambah Soal</a>
             </div>
         </div>
 
@@ -65,43 +69,75 @@
                         <p class="text-gray-500 text-sm mb-4 line-clamp-2">{{ $modul->deskripsi }}</p>
 
                         <!-- Tampilan Singkat Materi -->
-                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 mb-3">
                             <h3 class="font-bold text-xs text-gray-700 mb-1">Materi di dalam:</h3>
-                            <ul class="text-xs text-gray-600 line-clamp-3">
+                            <ul class="text-xs text-gray-600">
                                 @forelse($modul->materis as $materi)
-                                <li class="flex justify-between items-center mb-2">
-                                    <span>{{ $materi->judul_materi }}</span>
+                                <li class="flex justify-between items-center mb-2 border-b border-gray-200 pb-1">
+                                    <span class="truncate pr-2">{{ $materi->judul_materi }}</span>
                                     
-                                    <!-- Tombol Edit -->
-                                    <a href="/materi/{{ $materi->id }}/edit" class="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-1 px-3 rounded text-sm shadow-sm transition">
-                                        Edit
-                                    </a>
-                                    <form action="/materi/{{ $materi->id }}" method="POST" class="inline-block m-0" onsubmit="return confirm('Yakin mau menghapus materi ini? File lampiran akan ikut terhapus permanen.');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm shadow-sm transition">
-                                            Hapus
-                                        </button>
-                                    </form>
+                                    <div class="flex gap-1 shrink-0">
+                                        <a href="/materi/{{ $materi->id }}/edit" class="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-1 px-2 rounded text-xs shadow-sm transition">
+                                            Edit
+                                        </a>
+                                        <form action="/materi/{{ $materi->id }}" method="POST" class="inline-block m-0" onsubmit="return confirm('Yakin mau menghapus materi ini? File lampiran akan ikut terhapus permanen.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded text-xs shadow-sm transition">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
                                 </li>
                                 @empty
-                                    <li class="italic text-gray-400">Kosong</li>
+                                    <li class="italic text-gray-400">Belum ada materi</li>
                                 @endforelse
                             </ul>
                         </div>
+
+                        <!-- Tampilan Singkat Soal Kuis -->
+                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                            <h3 class="font-bold text-xs text-blue-800 mb-1">Soal Kuis:</h3>
+                            <ul class="text-xs text-gray-600">
+                                @forelse($modul->soals as $soal)
+                                <li class="flex justify-between items-center mb-2 border-b border-blue-200 pb-1">
+                                    <!-- Menampilkan 30 huruf pertama dari soal agar tidak kepanjangan -->
+                                    <span class="truncate pr-2 text-blue-900" title="{{ $soal->pertanyaan }}">{{ \Illuminate\Support\Str::limit($soal->pertanyaan, 30) }}</span>
+                                    
+                                    <div class="flex gap-1 shrink-0">
+                                        <!-- Tombol Edit Soal -->
+                                        <a href="/soal/{{ $soal->id }}/edit" class="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-1 px-2 rounded text-xs shadow-sm transition">
+                                            Edit
+                                        </a>
+                                        <!-- Tombol Hapus Soal -->
+                                        <form action="/soal/{{ $soal->id }}" method="POST" class="inline-block m-0" onsubmit="return confirm('Yakin mau menghapus soal ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded text-xs shadow-sm transition">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
+                                </li>
+                                @empty
+                                    <li class="italic text-blue-400">Belum ada soal</li>
+                                @endforelse
+                            </ul>
+                        </div>
+
                     </div>
 
-                    <!-- Area Tombol Aksi di Bawah -->
+                    <!-- Area Tombol Aksi di Bawah (Modul) -->
                     <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-between">
                         <a href="/kelola-modul/{{ $modul->id }}/edit" class="text-yellow-600 hover:text-yellow-800 font-bold text-sm bg-yellow-100 hover:bg-yellow-200 px-4 py-1.5 rounded transition">
-                            Edit
+                            Edit Modul
                         </a>
                         
                         <form action="/kelola-modul/{{ $modul->id }}" method="POST" class="m-0">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-600 hover:text-red-800 font-bold text-sm bg-red-100 hover:bg-red-200 px-4 py-1.5 rounded transition" onclick="return confirm('Yakin hapus modul ini beserta isinya?')">
-                                Hapus
+                                Hapus Modul
                             </button>
                         </form>
                     </div>

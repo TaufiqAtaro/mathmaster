@@ -132,7 +132,35 @@ class ModulController extends Controller
     // Rumus sakti nilai: (Benar / Total) * 100
     $nilai = round(($benar / $totalSoal) * 100);
 
+    // --- Simpan nilai otomatis ---
+    if (auth()->check() && auth()->user()->role === 'siswa') {
+        \App\Models\HasilKuis::updateOrCreate(
+            // Cari data berdasarkan user_id dan modul_id
+            ['user_id' => auth()->id(), 'modul_id' => $id],
+            // Jika sudah ada, update nilainya. Jika belum, buat baru.
+            ['skor' => $nilai]
+        );
+    }
+
     // Lempar ke halaman hasil kuis
     return view('hasil_kuis', compact('modul', 'soals', 'jawabanSiswa', 'nilai', 'benar', 'totalSoal'));
+}
+public function rekapNilai()
+{
+    // Ambil semua data nilai, sekalian bawa data siswa (user) dan modulnya, urutkan dari yang terbaru
+    $data_nilai = \App\Models\HasilKuis::with(['user', 'modul'])->latest()->get();
+    
+    return view('rekap_nilai', compact('data_nilai'));
+}
+// Menampilkan riwayat nilai khusus untuk siswa yang login
+public function riwayatKuis()
+{
+    // Ambil data nilai HANYA milik user yang sedang login
+    $riwayat = \App\Models\HasilKuis::with('modul')
+                ->where('user_id', \Illuminate\Support\Facades\Auth::id())
+                ->latest()
+                ->get();
+    
+    return view('riwayat_kuis', compact('riwayat'));
 }
 }

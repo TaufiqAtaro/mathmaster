@@ -55,4 +55,12 @@ Route::post('/belajar/{id}/kuis', [\App\Http\Controllers\ModulController::class,
 Route::get('/soal/tambah', [\App\Http\Controllers\SoalController::class, 'create']);
 Route::post('/soal', [\App\Http\Controllers\SoalController::class, 'store']);
 
+// Rute untuk Edit dan Hapus Soal
+Route::get('/soal/{id}/edit', [\App\Http\Controllers\SoalController::class, 'edit']);
+Route::put('/soal/{id}', [\App\Http\Controllers\SoalController::class, 'update']);
+Route::delete('/soal/{id}', [\App\Http\Controllers\SoalController::class, 'destroy']);
+
+Route::get('/rekap-nilai', [\App\Http\Controllers\ModulController::class, 'rekapNilai']);
+// Rute untuk siswa melihat riwayat nilainya sendiri
+Route::get('/riwayat-kuis', [\App\Http\Controllers\ModulController::class, 'riwayatKuis'])->middleware('auth');
 require __DIR__.'/auth.php';

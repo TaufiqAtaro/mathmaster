@@ -12,16 +12,22 @@
     <nav class="bg-purple-700 text-white p-4 shadow-md">
         <div class="container mx-auto flex justify-between items-center">
             <a href="/" class="text-2xl font-black tracking-tight">MathMaster</a>
-            <div>
+            <!-- Bagian Kanan: Menu Akun -->
+            <div class="flex items-center">
             @if (Route::has('login'))
             @auth
                 <!-- Jika yang login adalah Admin -->
                 @if(auth()->user()->role === 'admin')
                     <a href="{{ url('/dashboard') }}" class="hover:text-purple-200 font-semibold mr-4">Dashboard Admin</a>
-                <!-- Jika yang login adalah Siswa -->
+                <!-- Jika yang login Siswa -->
                 @else
-                    <span class="text-purple-200 font-medium mr-4">Halo, {{ auth()->user()->name }}!</span>
-                @endif
+                      <span class="text-purple-200 font-medium mr-3 text-sm sm:text-base hidden sm:inline">Halo, {{ auth()->user()->name }}!</span>
+                            
+                       <!-- Tombol Riwayat Kuis -->
+                       <a href="/riwayat-kuis" class="bg-purple-800 hover:bg-purple-900 text-white border border-purple-500 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-sm transition mr-3 flex items-center gap-1">
+                           Riwayat Nilai
+                     </a>
+                 @endif
 
                 <!-- Tombol Logout (Bisa dipakai Admin & Siswa langsung dari depan) -->
                 <form method="POST" action="{{ route('logout') }}" class="inline">

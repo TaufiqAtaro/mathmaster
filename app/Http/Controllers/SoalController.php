@@ -33,4 +33,41 @@ class SoalController extends Controller
 
         return redirect('/kelola-modul')->with('success', 'Soal kuis baru berhasil ditambahkan!');
     }
+    // Menampilkan form edit soal
+    public function edit($id)
+    {
+        $soal = Soal::findOrFail($id);
+        $data_modul = Modul::all(); 
+        
+        return view('edit_soal', compact('soal', 'data_modul'));
+    }
+
+    // Memproses update data soal
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'modul_id' => 'required',
+            'pertanyaan' => 'required',
+            'opsi_a' => 'required',
+            'opsi_b' => 'required',
+            'opsi_c' => 'required',
+            'opsi_d' => 'required',
+            'jawaban_benar' => 'required|in:a,b,c,d',
+            'pembahasan' => 'nullable'
+        ]);
+
+        $soal = Soal::findOrFail($id);
+        $soal->update($validated);
+
+        return redirect('/kelola-modul')->with('success', 'Soal kuis berhasil diperbarui!');
+    }
+
+    // Menghapus soal
+    public function destroy($id)
+    {
+        $soal = Soal::findOrFail($id);
+        $soal->delete();
+
+        return redirect('/kelola-modul')->with('success', 'Soal kuis berhasil dihapus!');
+    }
 }

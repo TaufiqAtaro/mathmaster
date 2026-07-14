@@ -14,7 +14,7 @@
             
             <!-- Bagian Kiri: Tombol Back -->
             <div class="flex items-center">
-                <a href="/" class="text-lg font-bold hover:text-purple-200 mr-3 sm:mr-4">Beranda</a>
+                <a href="/modul" class="text-lg font-bold hover:text-purple-200 mr-3 sm:mr-4">Kembali</a>
                 <span class="font-black tracking-tight hidden sm:inline border-l border-purple-500 pl-4">MathMaster</span>
             </div>
 
@@ -27,7 +27,12 @@
                             <a href="{{ url('/dashboard') }}" class="hover:text-purple-200 font-semibold mr-4 text-sm sm:text-base">Dashboard</a>
                         <!-- Jika yang login Siswa -->
                         @else
-                            <span class="text-purple-200 font-medium mr-4 text-sm sm:text-base hidden sm:inline">Halo, {{ auth()->user()->name }}!</span>
+                            <span class="text-purple-200 font-medium mr-3 text-sm sm:text-base hidden sm:inline">Halo, {{ auth()->user()->name }}!</span>
+                            
+                            <!-- Tombol Riwayat Kuis -->
+                            <a href="/riwayat-kuis" class="bg-purple-800 hover:bg-purple-900 text-white border border-purple-500 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-sm transition mr-3 flex items-center gap-1">
+                                 Riwayat Nilai
+                            </a>
                         @endif
 
                         <!-- Tombol Logout -->
