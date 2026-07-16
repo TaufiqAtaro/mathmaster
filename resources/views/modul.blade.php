@@ -1,51 +1,8 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathMaster - Belajar Matematika Mudah</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+@extends('layouts.master')
 
-    <!-- Navbar Atas -->
-    <nav class="bg-purple-700 text-white p-4 shadow-md">
-        <div class="container mx-auto flex justify-between items-center">
-            <a href="/" class="text-2xl font-black tracking-tight">MathMaster</a>
-            <!-- Bagian Kanan: Menu Akun -->
-            <div class="flex items-center">
-            @if (Route::has('login'))
-            @auth
-                <!-- Jika yang login adalah Admin -->
-                @if(auth()->user()->role === 'admin')
-                    <a href="{{ url('/dashboard') }}" class="hover:text-purple-200 font-semibold mr-4">Dashboard Admin</a>
-                <!-- Jika yang login Siswa -->
-                @else
-                      <span class="text-purple-200 font-medium mr-3 text-sm sm:text-base hidden sm:inline">Halo, {{ auth()->user()->name }}!</span>
-                            
-                       <!-- Tombol Riwayat Kuis -->
-                       <a href="/riwayat-kuis" class="bg-purple-800 hover:bg-purple-900 text-white border border-purple-500 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-sm transition mr-3 flex items-center gap-1">
-                           Riwayat Nilai
-                     </a>
-                 @endif
+@section('title', 'Ruang Belajar - MathMaster')
 
-                <!-- Tombol Logout (Bisa dipakai Admin & Siswa langsung dari depan) -->
-                <form method="POST" action="{{ route('logout') }}" class="inline">
-                    @csrf
-                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full font-bold text-sm shadow-sm transition">Log Out</button>
-                </form>
-            @else
-                <!-- Jika belum login sama sekali -->
-                <a href="{{ route('login') }}" class="hover:text-purple-200 font-semibold mr-5">Log in</a>
-                @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="bg-white text-purple-700 px-5 py-2 rounded-full font-bold hover:bg-gray-100 shadow-sm transition">Register</a>
-                @endif
-            @endauth
-        @endif
-            </div>
-        </div>
-    </nav>
-
+@section('content')
     <!-- Hero Section -->
     <header class="container mx-auto text-center py-20 px-4">
         <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-5">Belajar Matematika Jadi Lebih Menyenangkan!</h1>
@@ -53,7 +10,7 @@
     </header>
 
     <!-- Area Daftar Modul -->
-    <main class="container mx-auto px-4 pb-20">
+    <div class="container mx-auto px-4 pb-20">
         <!-- Grid Modul Siswa -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($moduls as $modul)
@@ -87,7 +44,5 @@
                 </div>
             @endforeach
         </div>
-    </main>
-
-</body>
-</html>
+    </div>
+@endsection

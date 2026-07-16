@@ -16,7 +16,7 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     <!-- Menu Kelola Modul -->
-                    <x-nav-link :href="url('/modul')" :active="request()->is('modul*')">
+                    <x-nav-link :href="url('/kelola-modul')" :active="request()->is('kelola_modul*')">
                         Kelola Modul
                     </x-nav-link>
                 </div>

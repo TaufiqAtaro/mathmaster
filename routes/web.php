@@ -6,9 +6,11 @@ use App\Http\Controllers\MateriController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Modul;
 
-// 1. Landing Page Baru (Public)
+// 1. Landing Page Baru 
 Route::get('/', function () {
-    return view('welcome');
+    // Mengambil 3 modul terbaru untuk dipajang di depan
+    $data_modul = \App\Models\Modul::latest()->take(3)->get();
+    return view('welcome', compact('data_modul'));
 });
 
 Route::get('/modul', function () {
@@ -63,4 +65,7 @@ Route::delete('/soal/{id}', [\App\Http\Controllers\SoalController::class, 'destr
 Route::get('/rekap-nilai', [\App\Http\Controllers\ModulController::class, 'rekapNilai']);
 // Rute untuk siswa melihat riwayat nilainya sendiri
 Route::get('/riwayat-kuis', [\App\Http\Controllers\ModulController::class, 'riwayatKuis'])->middleware('auth');
+Route::get('/tentang-kami', function () {
+    return view('tentang_kami');
+});
 require __DIR__.'/auth.php';

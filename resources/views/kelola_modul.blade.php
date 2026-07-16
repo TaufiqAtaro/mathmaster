@@ -37,10 +37,10 @@
 
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800">Daftar Modul MathMaster</h1>
-            <div class="space-x-2">
+            <div class="space-x-2 flex items-center">
+                <a href="/rekap-nilai" class="bg-gray-800 text-white px-4 py-2 rounded font-bold hover:bg-gray-900 shadow flex items-center gap-2 mr-2">Rekap Nilai Siswa</a> 
                 <a href="/kelola-modul/tambah" class="bg-green-600 text-white px-4 py-2 rounded font-bold hover:bg-green-700 shadow">+ Tambah Modul</a>
                 <a href="/materi/tambah" class="bg-purple-600 text-white px-4 py-2 rounded font-bold hover:bg-purple-700 shadow">+ Tambah Materi</a>
-                <!-- Tambahan Tombol Kuis -->
                 <a href="/soal/tambah" class="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 shadow">+ Tambah Soal</a>
             </div>
         </div>
