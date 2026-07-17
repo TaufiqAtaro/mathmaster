@@ -57,12 +57,13 @@ Route::middleware(['auth'])->group(function () {
     // FASE 2: Gating System & Ruang Belajar
     Route::get('/belajar/{id}', [ModulController::class, 'show']);
     
-    // Kuis Per Materi (Syarat buka gembok)
+    // Kuis Per Materi 
     Route::get('/materi/{id}/kuis', [ModulController::class, 'kuisMateri']);
     Route::post('/materi/{id}/kuis', [ModulController::class, 'submitKuisMateri']);
-    
-    // Ujian Akhir Modul (Boss Fight)
+
+    // Ujian Akhir Modul 
     Route::get('/modul/{id}/ujian', [ModulController::class, 'kuisModul']);
+    Route::post('/modul/{id}/ujian', [ModulController::class, 'submitKuisModul']); 
 
     // Riwayat Kuis Siswa
     Route::get('/riwayat-kuis', [ModulController::class, 'riwayatKuis']);

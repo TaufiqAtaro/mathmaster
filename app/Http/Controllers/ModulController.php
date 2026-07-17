@@ -179,6 +179,42 @@ class ModulController extends Controller
         return view('ujian_modul', compact('modul')); // Nanti kita buat tampilannya
     }
 
+    public function submitKuisModul(Request $request, $id)
+    {
+        $modul = Modul::with(['soals' => function($q) {
+            $q->where('tipe_soal', 'ujian_modul');
+        }])->findOrFail($id);
+        
+        $soals = $modul->soals;
+        $jawabanSiswa = $request->input('jawaban', []); 
+
+        $benar = 0;
+        $totalSoal = $soals->count();
+
+        if ($totalSoal == 0) {
+            return redirect('/belajar/' . $id)->with('error', 'Soal ujian belum tersedia.');
+        }
+
+        foreach ($soals as $soal) {
+            if (isset($jawabanSiswa[$soal->id]) && $jawabanSiswa[$soal->id] == $soal->jawaban_benar) {
+                $benar++;
+            }
+        }
+
+        // Hitung nilai akhir ujian
+        $nilai = round(($benar / $totalSoal) * 100);
+
+        // Simpan ke Riwayat Nilai Utama (Untuk Rekap Admin)
+        if (auth()->check() && auth()->user()->role === 'siswa') {
+            RiwayatNilai::updateOrCreate(
+                ['user_id' => auth()->id(), 'modul_id' => $id],
+                ['skor_nilai' => $nilai] 
+            );
+        }
+
+        return view('hasil_ujian', compact('modul', 'nilai', 'benar', 'totalSoal'));
+    }
+
     // =========================================================
     // UPDATE FUNGSI REKAP DAN RIWAYAT
     // =========================================================

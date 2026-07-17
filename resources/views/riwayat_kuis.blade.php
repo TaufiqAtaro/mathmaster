@@ -1,35 +1,30 @@
 @extends('layouts.master')
-
-@section('title', 'Riwayat Belajarku - MathMaster')
+@section('title', 'Riwayat Nilaiku')
 
 @section('content')
-    <div class="container mx-auto px-4 py-8 max-w-4xl flex-grow">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8 border-t-8 border-purple-500">
-            <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Riwayat Belajarku</h1>
-            <p class="text-gray-600">Pantau terus perkembangan nilaimu di sini. Jangan menyerah kalau masih ada yang merah!</p>
-        </div>
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-black text-gray-900 mb-8">Riwayat Ujian Akhir Modul</h1>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            @forelse($riwayat as $hasil)
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition">
+    @if($riwayat->isEmpty())
+        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 text-center">
+            <p class="text-gray-500 font-medium">Kamu belum menyelesaikan ujian akhir modul apa pun.</p>
+        </div>
+    @else
+        <div class="space-y-4">
+            @foreach($riwayat as $item)
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between hover:border-purple-300 transition-colors">
                     <div>
-                        <h3 class="font-bold text-lg text-gray-800 mb-1">{{ $hasil->modul->judul_modul }}</h3>
-                        <p class="text-sm text-gray-500">Dikerjakan: {{ $hasil->updated_at->format('d M Y') }}</p>
+                        <p class="text-sm text-gray-500 mb-1 font-medium">{{ $item->created_at->format('d M Y - H:i') }}</p>
+                        <h3 class="font-bold text-xl text-gray-900">{{ $item->modul->judul_modul }}</h3>
                     </div>
-                    
-                    <div class="flex flex-col items-center justify-center bg-gray-50 w-20 h-20 rounded-full border-4 {{ $hasil->skor >= 70 ? 'border-green-400' : 'border-red-400' }}">
-                        <span class="text-2xl font-black {{ $hasil->skor >= 70 ? 'text-green-600' : 'text-red-600' }}">
-                            {{ $hasil->skor }}
+                    <div class="text-right">
+                        <span class="text-4xl font-black {{ $item->skor_nilai >= 70 ? 'text-green-500' : 'text-red-500' }}">
+                            {{ $item->skor_nilai }}
                         </span>
                     </div>
                 </div>
-            @empty
-                <div class="col-span-full bg-yellow-50 p-8 rounded-xl border border-yellow-200 text-center">
-                    <p class="text-yellow-700 font-bold text-lg mb-2">Belum Ada Riwayat Kuis</p>
-                    <p class="text-yellow-600">Kamu belum mengerjakan kuis apa pun. Ayo mulai belajar dan kumpulkan nilaimu!</p>
-                    <a href="/modul" class="inline-block mt-4 bg-purple-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-purple-700 transition">Mulai Belajar</a>
-                </div>
-            @endforelse
+            @endforeach
         </div>
-    </div>
+    @endif
+</div>
 @endsection
