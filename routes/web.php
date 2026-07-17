@@ -67,6 +67,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Riwayat Kuis Siswa
     Route::get('/riwayat-kuis', [ModulController::class, 'riwayatKuis']);
+
+    // Halaman Lobi Ruang Ujian (Semua Ujian)
+    Route::get('/ruang-ujian', [ModulController::class, 'ruangUjian']);
 });
 
 

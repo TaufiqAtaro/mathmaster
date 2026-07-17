@@ -232,4 +232,49 @@ class ModulController extends Controller
                     ->get();
         return view('riwayat_kuis', compact('riwayat'));
     }
+    // =========================================================
+    // FUNGSI LOBI RUANG UJIAN (BOSS RUSH)
+    // =========================================================
+    public function ruangUjian()
+    {
+        $moduls = Modul::with('materis')->get();
+        $progress = ProgressMateri::where('user_id', auth()->id())->get()->keyBy('materi_id');
+        $riwayatUjian = RiwayatNilai::where('user_id', auth()->id())->get()->keyBy('modul_id');
+
+        $ujianList = $moduls->map(function($modul) use ($progress, $riwayatUjian) {
+            $semuaLulus = true;
+            
+            // Cek apakah semua materi di modul ini sudah lulus
+            if ($modul->materis->count() > 0) {
+                foreach ($modul->materis as $materi) {
+                    $status = $progress->get($materi->id);
+                    if (!$status || !$status->is_lulus) {
+                        $semuaLulus = false;
+                        break;
+                    }
+                }
+            } else {
+                // Kalau modul tidak punya materi sama sekali, ujian dikunci
+                $semuaLulus = false; 
+            }
+
+            $modul->is_unlocked = $semuaLulus;
+            
+            // Cek apakah siswa sudah pernah mengerjakan ujian ini
+            $riwayat = $riwayatUjian->get($modul->id);
+            $modul->skor_ujian = $riwayat ? $riwayat->skor_nilai : null;
+
+            return $modul;
+        });
+
+        // Sortir: Yang terbuka ditaruh di atas, lalu diurutkan berdasarkan ID/Urutan modul
+        $ujianList = $ujianList->sort(function($a, $b) {
+            if ($a->is_unlocked == $b->is_unlocked) {
+                return $a->id <=> $b->id;
+            }
+            return $a->is_unlocked ? -1 : 1; // -1 artinya naik ke atas
+        })->values();
+
+        return view('ruang_ujian', compact('ujianList'));
+    }
 }

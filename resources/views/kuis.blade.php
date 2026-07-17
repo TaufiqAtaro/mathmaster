@@ -2,12 +2,14 @@
 
 @section('title', 'Kuis - ' . $materi->judul_materi)
 
+@section('back_url', '/belajar/' . $materi->modul_id)
+@section('back_text', 'Kembali ke Ruang Belajar')
+
 @section('content')
     <div class="p-4 md:p-8">
         <div class="max-w-4xl mx-auto">
             <div class="flex items-center justify-between mb-8">
                 <h1 class="text-3xl font-black text-gray-900">Kuis: {{ $materi->judul_materi }}</h1>
-                <a href="/belajar/{{ $materi->modul_id }}" class="text-purple-600 font-bold hover:underline">Batal & Kembali</a>
             </div>
 
             @if($materi->soals->count() == 0)

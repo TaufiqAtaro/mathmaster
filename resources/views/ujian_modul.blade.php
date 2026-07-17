@@ -1,6 +1,9 @@
 @extends('layouts.master')
 @section('title', 'Ujian Akhir - ' . $modul->judul_modul)
 
+@section('back_url', '/belajar/' . $modul->id)
+@section('back_text', 'Kembali ke Ruang Belajar')
+
 @section('content')
     <div class="p-4 md:p-8 bg-gray-50 min-h-screen">
         <div class="max-w-4xl mx-auto">

@@ -2,6 +2,9 @@
 
 @section('title', 'Belajar ' . $modul->judul_modul)
 
+@section('back_url', '/modul')
+@section('back_text', 'Kembali ke Daftar Modul')
+
 @section('content')
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <!-- Header Modul -->

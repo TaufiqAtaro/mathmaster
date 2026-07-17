@@ -2,6 +2,9 @@
 
 @section('title', 'Hasil Kuis - ' . $materi->judul_materi)
 
+@section('back_url', '/belajar/' . $materi->modul_id)
+@section('back_text', 'Kembali ke Ruang Belajar')
+
 @section('content')
     <div class="p-4 md:p-8">
         <div class="max-w-3xl mx-auto">
