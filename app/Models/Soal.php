@@ -16,4 +16,10 @@ class Soal extends Model
     {
         return $this->belongsTo(Modul::class);
     }
+    
+    // Relasi ke Materi (Untuk kuis per materi)
+    public function materi()
+    {
+        return $this->belongsTo(Materi::class);
+    }
 }

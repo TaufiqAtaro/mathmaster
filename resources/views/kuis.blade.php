@@ -1,25 +1,25 @@
 @extends('layouts.master')
 
-@section('title', 'Kuis - ' . $modul->judul_modul)
+@section('title', 'Kuis - ' . $materi->judul_materi)
 
 @section('content')
     <div class="p-4 md:p-8">
         <div class="max-w-4xl mx-auto">
             <div class="flex items-center justify-between mb-8">
-                <h1 class="text-3xl font-black text-gray-900">Kuis: {{ $modul->judul_modul }}</h1>
-                <a href="/belajar/{{ $modul->id }}" class="text-purple-600 font-bold hover:underline">Batal & Kembali</a>
+                <h1 class="text-3xl font-black text-gray-900">Kuis: {{ $materi->judul_materi }}</h1>
+                <a href="/belajar/{{ $materi->modul_id }}" class="text-purple-600 font-bold hover:underline">Batal & Kembali</a>
             </div>
 
-            @if($modul->soals->count() == 0)
+            @if($materi->soals->count() == 0)
                 <div class="bg-yellow-50 p-6 rounded-xl border border-yellow-200 text-center">
-                    <p class="text-yellow-700 font-bold">Admin belum memasukkan soal kuis untuk modul ini.</p>
+                    <p class="text-yellow-700 font-bold">Admin belum memasukkan soal kuis untuk materi ini.</p>
                 </div>
             @else
-                <form action="/belajar/{{ $modul->id }}/kuis" method="POST">
+                <form action="/materi/{{ $materi->id }}/kuis" method="POST">
                     @csrf
                     
                     <div class="space-y-6">
-                        @foreach($modul->soals as $index => $soal)
+                        @foreach($materi->soals as $index => $soal)
                             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
                                 <p class="font-bold text-lg mb-4"><span class="text-purple-500 mr-2">{{ $index + 1 }}.</span> {{ $soal->pertanyaan }}</p>
                                 

@@ -6,28 +6,30 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up()
     {
         Schema::create('soals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('modul_id')->constrained('moduls')->onDelete('cascade'); // Terhubung ke Modul
+            // Tetap terhubung ke Modul (induk utama)
+            $table->foreignId('modul_id')->constrained('moduls')->onDelete('cascade');
+            
+            // BARU: Terhubung ke Materi (Bisa kosong/null jika ini adalah soal Ujian Akhir Modul)
+            $table->foreignId('materi_id')->nullable()->constrained('materis')->onDelete('cascade'); 
+            
+            // BARU: Penanda jenis soal
+            $table->enum('tipe_soal', ['kuis_materi', 'ujian_modul'])->default('kuis_materi'); 
+            
             $table->text('pertanyaan');
             $table->string('opsi_a');
             $table->string('opsi_b');
             $table->string('opsi_c');
             $table->string('opsi_d');
-            $table->enum('jawaban_benar', ['a', 'b', 'c', 'd']); // Hanya menerima a/b/c/d
-            $table->text('pembahasan')->nullable(); // Opsional: penjelasan jawaban
+            $table->enum('jawaban_benar', ['a', 'b', 'c', 'd']);
+            $table->text('pembahasan')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('soals');

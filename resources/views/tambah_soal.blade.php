@@ -1,32 +1,31 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Tambah Soal Kuis - Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="p-8 bg-gray-100 min-h-screen">
-    
-    <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md border-t-4 border-blue-500">
-        <h1 class="text-2xl font-bold mb-6 text-gray-800">Tambah Soal Kuis Pilihan Ganda</h1>
-        
-        <!-- Alarm Error Validasi -->
-        @if ($errors->any())
-            <div class="mb-4 p-3 bg-red-50 text-red-700 rounded border-l-4 border-red-500">
-                <ul class="list-disc list-inside text-sm">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+@extends('layouts.master')
+@section('title', 'Tambah Soal Baru')
 
-        <form action="/soal" method="POST">
-            @csrf
-            
-            <div class="mb-6">
-                <label class="block text-gray-700 font-bold mb-2">Pilih Modul Induk (Untuk Kuis Ini)</label>
-                <select name="modul_id" class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" required>
+@section('content')
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-black text-gray-900">Tambah Soal Kuis</h1>
+        <a href="/kelola-modul" class="text-gray-500 hover:text-purple-600 font-bold transition">Batal & Kembali</a>
+    </div>
+    
+    <form action="/soal" method="POST" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 space-y-6">
+        @csrf
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-purple-50 p-6 rounded-xl border border-purple-100 mb-6">
+            <!-- Tipe Soal -->
+            <div>
+                <label class="block font-bold text-gray-700 mb-2">Tipe Kuis <span class="text-red-500">*</span></label>
+                <select name="tipe_soal" id="tipe_soal" class="w-full border-gray-300 rounded-xl p-3 focus:ring-purple-500" required>
+                    <option value="">-- Pilih Tipe Soal --</option>
+                    <option value="kuis_materi">Kuis Per Materi (Syarat Lulus)</option>
+                    <option value="ujian_modul">Ujian Akhir Modul (Boss Fight)</option>
+                </select>
+            </div>
+
+            <!-- Pilih Modul -->
+            <div>
+                <label class="block font-bold text-gray-700 mb-2">Untuk Modul Apa? <span class="text-red-500">*</span></label>
+                <select name="modul_id" id="modul_id" class="w-full border-gray-300 rounded-xl p-3 focus:ring-purple-500" required>
                     <option value="">-- Pilih Modul --</option>
                     @foreach($data_modul as $modul)
                         <option value="{{ $modul->id }}">{{ $modul->judul_modul }} (Kelas {{ $modul->tingkat_kelas }})</option>
@@ -34,61 +33,71 @@
                 </select>
             </div>
 
-            <div class="mb-6">
-                <label class="block text-gray-700 font-bold mb-2">Pertanyaan</label>
-                <textarea name="pertanyaan" class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3" placeholder="Ketik soal di sini..." required></textarea>
+            <!-- Pilih Materi -->
+            <div class="md:col-span-2">
+                <label class="block font-bold text-gray-700 mb-2">Untuk Materi Apa?</label>
+                <select name="materi_id" class="w-full border-gray-300 rounded-xl p-3 focus:ring-purple-500">
+                    <option value="">-- Abaikan jika ini Soal Ujian Akhir --</option>
+                    @foreach($data_modul as $modul)
+                        <optgroup label="MODUL: {{ strtoupper($modul->judul_modul) }}">
+                            @foreach($modul->materis as $materi)
+                                <option value="{{ $materi->id }}">Materi: {{ $materi->judul_materi }}</option>
+                            @endforeach
+                        </optgroup>
+                    @endforeach
+                </select>
+                <p class="text-sm text-gray-500 mt-2"><b>Catatan:</b> Wajib diisi jika kamu memilih tipe <b>"Kuis Per Materi"</b>.</p>
             </div>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
-                <div>
-                    <label class="block text-gray-700 font-bold mb-1 text-sm">Opsi A</label>
-                    <input type="text" name="opsi_a" class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-bold mb-1 text-sm">Opsi B</label>
-                    <input type="text" name="opsi_b" class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-bold mb-1 text-sm">Opsi C</label>
-                    <input type="text" name="opsi_c" class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-bold mb-1 text-sm">Opsi D</label>
-                    <input type="text" name="opsi_d" class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-                </div>
+        <!-- Pertanyaan -->
+        <div>
+            <label class="block font-bold text-gray-700 mb-2">Pertanyaan <span class="text-red-500">*</span></label>
+            <textarea name="pertanyaan" rows="3" class="w-full border-gray-300 rounded-xl p-3 focus:ring-purple-500" required></textarea>
+        </div>
+
+        <!-- Opsi Jawaban -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block font-bold text-gray-700 mb-2">Opsi A <span class="text-red-500">*</span></label>
+                <input type="text" name="opsi_a" class="w-full border-gray-300 rounded-xl p-3" required>
             </div>
-
-            <div class="mb-6">
-                <label class="block text-gray-700 font-bold mb-2">Kunci Jawaban Benar</label>
-                <div class="flex gap-4">
-                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50">
-                        <input type="radio" name="jawaban_benar" value="a" class="w-4 h-4 text-blue-600" required> A
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50">
-                        <input type="radio" name="jawaban_benar" value="b" class="w-4 h-4 text-blue-600"> B
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50">
-                        <input type="radio" name="jawaban_benar" value="c" class="w-4 h-4 text-blue-600"> C
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50">
-                        <input type="radio" name="jawaban_benar" value="d" class="w-4 h-4 text-blue-600"> D
-                    </label>
-                </div>
+            <div>
+                <label class="block font-bold text-gray-700 mb-2">Opsi B <span class="text-red-500">*</span></label>
+                <input type="text" name="opsi_b" class="w-full border-gray-300 rounded-xl p-3" required>
             </div>
-
-            <div class="mb-8">
-                <label class="block text-gray-700 font-bold mb-2">Pembahasan (Opsional)</label>
-                <textarea name="pembahasan" class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="2" placeholder="Penjelasan kenapa jawaban tersebut benar..."></textarea>
+            <div>
+                <label class="block font-bold text-gray-700 mb-2">Opsi C <span class="text-red-500">*</span></label>
+                <input type="text" name="opsi_c" class="w-full border-gray-300 rounded-xl p-3" required>
             </div>
-
-            <div class="flex justify-between items-center">
-                <a href="/kelola-modul" class="text-gray-500 hover:text-gray-700 font-bold transition">Batal</a>
-                <button type="submit" class="bg-blue-600 text-white font-bold px-8 py-3 rounded-lg hover:bg-blue-700 shadow-md transition">
-                    Simpan Soal
-                </button>
+            <div>
+                <label class="block font-bold text-gray-700 mb-2">Opsi D <span class="text-red-500">*</span></label>
+                <input type="text" name="opsi_d" class="w-full border-gray-300 rounded-xl p-3" required>
             </div>
-        </form>
-    </div>
+        </div>
 
-</body>
-</html>
+        <!-- Kunci Jawaban -->
+        <div>
+            <label class="block font-bold text-gray-700 mb-2">Kunci Jawaban Benar <span class="text-red-500">*</span></label>
+            <select name="jawaban_benar" class="w-full border-gray-300 rounded-xl p-3 focus:ring-purple-500" required>
+                <option value="a">Opsi A</option>
+                <option value="b">Opsi B</option>
+                <option value="c">Opsi C</option>
+                <option value="d">Opsi D</option>
+            </select>
+        </div>
+
+        <!-- Pembahasan -->
+        <div>
+            <label class="block font-bold text-gray-700 mb-2">Pembahasan (Opsional)</label>
+            <textarea name="pembahasan" rows="3" class="w-full border-gray-300 rounded-xl p-3 focus:ring-purple-500" placeholder="Jelaskan alasan kenapa jawaban tersebut benar..."></textarea>
+        </div>
+
+        <div class="pt-4 border-t border-gray-100">
+            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black text-lg py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1">
+                💾 Simpan Soal Kuis
+            </button>
+        </div>
+    </form>
+</div>
+@endsection

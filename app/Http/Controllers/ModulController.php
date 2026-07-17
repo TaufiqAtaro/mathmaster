@@ -4,163 +4,196 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
-use App\Models\Modul; // Wajib dipanggil agar Controller kenal Model-nya
+use App\Models\Modul; 
+use App\Models\Materi;
+use App\Models\ProgressMateri;
+use App\Models\RiwayatNilai;
 
 class ModulController extends Controller
 {
     public function index()
     {
-        // Cuma 1 baris ini pengganti "SELECT * FROM moduls"!
         $data_modul = Modul::all(); 
-        
-        // Lempar datanya ke file view yang bernama 'modul'
         return view('kelola_modul', compact('data_modul'));
     }
 
-    public function create ()
+    public function create()
     {
         return view('tambah_modul');
     }
-    public function store(Request $request)
-{
-    // 1. Validasi data (termasuk ngecek apakah file yang diupload beneran gambar, max 2MB)
-    $validated = $request->validate([
-        'judul_modul' => 'required',
-        'tingkat_kelas' => 'required',
-        'deskripsi' => 'required',
-        'gambar_modul' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-    ]);
 
-    // 2. Cek apakah admin mengunggah file gambar
-    if ($request->hasFile('gambar_modul')) {
-        // Simpan gambar ke dalam folder: storage/app/public/cover_modul
-        $path = $request->file('gambar_modul')->store('cover_modul', 'public');
-        // Masukkan path/alamat gambarnya ke dalam array data yang akan disimpan
-        $validated['gambar_modul'] = $path;
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'judul_modul' => 'required',
+            'tingkat_kelas' => 'required',
+            'deskripsi' => 'required',
+            'gambar_modul' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($request->hasFile('gambar_modul')) {
+            $validated['gambar_modul'] = $request->file('gambar_modul')->store('cover_modul', 'public');
+        }
+
+        Modul::create($validated);
+        return redirect('/kelola-modul')->with('success', 'Modul berhasil ditambahkan!');
     }
 
-    // 3. Simpan semua data ke database
-    Modul::create($validated);
-
-    return redirect('/kelola-modul')->with('success', 'Modul berhasil ditambahkan!');
-}
-
-    public function destroy($id)
-{
-    // 1. Cari data modul yang ID-nya sesuai
-    $modul_dihapus = Modul::find($id);
-    
-    // 2. Hancurkan dari database!
-    $modul_dihapus->delete();
-    
-    // 3. Tendang kembali ke halaman daftar modul
-    return redirect('/kelola-modul');
-}
-    
     public function edit($id)
-{
-    // Cari modul berdasarkan ID lalu lempar ke file view 'edit_modul'
-    $modul_edit = Modul::find($id);
-    return view('edit_modul', compact('modul_edit'));
-}
+    {
+        $modul_edit = Modul::find($id);
+        return view('edit_modul', compact('modul_edit'));
+    }
 
     public function update(Request $request, $id)
-{
-    $modul = Modul::findOrFail($id);
-    
-    $validated = $request->validate([
-        'judul_modul' => 'required',
-        'tingkat_kelas' => 'required',
-        'deskripsi' => 'required',
-        'gambar_modul' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-    ]);
+    {
+        $modul = Modul::findOrFail($id);
+        
+        $validated = $request->validate([
+            'judul_modul' => 'required',
+            'tingkat_kelas' => 'required',
+            'deskripsi' => 'required',
+            'gambar_modul' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
 
-    // Jika admin mengupload gambar baru
-    if ($request->hasFile('gambar_modul')) {
-        // Hapus gambar lama dari server (agar tidak numpuk)
-        if ($modul->gambar_modul) {
-            Storage::disk('public')->delete($modul->gambar_modul);
+        if ($request->hasFile('gambar_modul')) {
+            if ($modul->gambar_modul) {
+                Storage::disk('public')->delete($modul->gambar_modul);
+            }
+            $validated['gambar_modul'] = $request->file('gambar_modul')->store('cover_modul', 'public');
         }
-        // Simpan gambar baru
-        $validated['gambar_modul'] = $request->file('gambar_modul')->store('cover_modul', 'public');
+
+        $modul->update($validated);
+        return redirect('/kelola-modul')->with('success', 'Modul berhasil diperbarui!');
     }
 
-    $modul->update($validated);
+    public function destroy($id)
+    {
+        $modul_dihapus = Modul::find($id);
+        $modul_dihapus->delete();
+        return redirect('/kelola-modul');
+    }
 
-    return redirect('/kelola-modul')->with('success', 'Modul berhasil diperbarui!');
-}
+    // =========================================================
+    // FASE 2: LOGIKA GEMBOK MATERI (GATING SYSTEM)
+    // =========================================================
     public function show($id)
-{
-    // Ambil data modul beserta seluruh materinya
-    $modul = Modul::with('materis')->findOrFail($id);
-    
-    // Kirim datanya ke halaman 'belajar'
-    return view('belajar', compact('modul'));
-}
-    // Fungsi menampilkan halaman kuis
-    public function kuis($id)
-{
-    // Ambil data modul beserta soal-soalnya
-    $modul = Modul::with('soals')->findOrFail($id);
-    return view('kuis', compact('modul'));
-}
+    {
+        // Ambil data modul beserta materinya, urutkan ID dari yang terkecil
+        $modul = Modul::with(['materis' => function($query) {
+            $query->orderBy('id', 'asc');
+        }])->findOrFail($id);
+        
+        $userId = auth()->id();
+        
+        // Ambil riwayat lulus siswa untuk semua materi di modul ini
+        $materiIds = $modul->materis->pluck('id')->toArray();
+        $progress = ProgressMateri::where('user_id', $userId)
+                    ->whereIn('materi_id', $materiIds)
+                    ->get()
+                    ->keyBy('materi_id');
 
-    // Fungsi menghitung nilai kuis
-    public function submitKuis(Request $request, $id)
-{
-    $modul = Modul::with('soals')->findOrFail($id);
-    $soals = $modul->soals;
-    
-    // Ambil semua jawaban yang dikirim siswa (format array)
-    $jawabanSiswa = $request->input('jawaban', []); 
-
-    $benar = 0;
-    $totalSoal = $soals->count();
-
-    // Cek kalau belum ada soal sama sekali
-    if ($totalSoal == 0) {
-        return redirect('/belajar/' . $id)->with('error', 'Kuis belum tersedia.');
-    }
-
-    // Hitung jawaban yang benar
-    foreach ($soals as $soal) {
-        if (isset($jawabanSiswa[$soal->id]) && $jawabanSiswa[$soal->id] == $soal->jawaban_benar) {
-            $benar++;
+        // Aturan Gembok: Materi pertama selalu terbuka
+        $isUnlocked = true; 
+        
+        foreach ($modul->materis as $materi) {
+            // Pasang status gembok ke materi saat ini
+            $materi->is_unlocked = $isUnlocked;
+            
+            // Cek apakah siswa sudah lulus materi ini?
+            $status = $progress->get($materi->id);
+            if ($status && $status->is_lulus) {
+                $isUnlocked = true; // Kunci materi selanjutnya TERBUKA
+            } else {
+                $isUnlocked = false; // Kunci semua materi selanjutnya TERTUTUP
+            }
         }
+
+        // Cek apakah SEMUA materi sudah lulus untuk membuka Ujian Modul
+        $semuaLulus = $modul->materis->every(function($m) use ($progress) {
+            $status = $progress->get($m->id);
+            return $status && $status->is_lulus;
+        });
+
+        return view('belajar', compact('modul', 'progress', 'semuaLulus'));
     }
 
-    // Rumus sakti nilai: (Benar / Total) * 100
-    $nilai = round(($benar / $totalSoal) * 100);
-
-    // --- Simpan nilai otomatis ---
-    if (auth()->check() && auth()->user()->role === 'siswa') {
-        \App\Models\HasilKuis::updateOrCreate(
-            // Cari data berdasarkan user_id dan modul_id
-            ['user_id' => auth()->id(), 'modul_id' => $id],
-            // Jika sudah ada, update nilainya. Jika belum, buat baru.
-            ['skor' => $nilai]
-        );
+    // =========================================================
+    // FUNGSI KUIS KHUSUS PER MATERI
+    // =========================================================
+    public function kuisMateri($materiId)
+    {
+        $materi = Materi::with(['soals' => function($q) {
+            $q->where('tipe_soal', 'kuis_materi');
+        }])->findOrFail($materiId);
+        
+        return view('kuis', compact('materi'));
     }
 
-    // Lempar ke halaman hasil kuis
-    return view('hasil_kuis', compact('modul', 'soals', 'jawabanSiswa', 'nilai', 'benar', 'totalSoal'));
-}
-public function rekapNilai()
-{
-    // Ambil semua data nilai, sekalian bawa data siswa (user) dan modulnya, urutkan dari yang terbaru
-    $data_nilai = \App\Models\HasilKuis::with(['user', 'modul'])->latest()->get();
-    
-    return view('rekap_nilai', compact('data_nilai'));
-}
-// Menampilkan riwayat nilai khusus untuk siswa yang login
-public function riwayatKuis()
-{
-    // Ambil data nilai HANYA milik user yang sedang login
-    $riwayat = \App\Models\HasilKuis::with('modul')
-                ->where('user_id', \Illuminate\Support\Facades\Auth::id())
-                ->latest()
-                ->get();
-    
-    return view('riwayat_kuis', compact('riwayat'));
-}
+    public function submitKuisMateri(Request $request, $materiId)
+    {
+        $materi = Materi::with(['soals' => function($q) {
+            $q->where('tipe_soal', 'kuis_materi');
+        }])->findOrFail($materiId);
+        
+        $soals = $materi->soals;
+        $jawabanSiswa = $request->input('jawaban', []); 
+
+        $benar = 0;
+        $totalSoal = $soals->count();
+
+        if ($totalSoal == 0) {
+            return redirect('/belajar/' . $materi->modul_id)->with('error', 'Kuis belum tersedia.');
+        }
+
+        foreach ($soals as $soal) {
+            if (isset($jawabanSiswa[$soal->id]) && $jawabanSiswa[$soal->id] == $soal->jawaban_benar) {
+                $benar++;
+            }
+        }
+
+        $nilai = round(($benar / $totalSoal) * 100);
+        $isLulus = $nilai >= 70; // Standar kelulusan (bisa diubah)
+
+        // Simpan progress kelulusan materi
+        if (auth()->check() && auth()->user()->role === 'siswa') {
+            ProgressMateri::updateOrCreate(
+                ['user_id' => auth()->id(), 'materi_id' => $materiId],
+                ['skor' => $nilai, 'is_lulus' => $isLulus]
+            );
+        }
+
+        // Kita bisa pakai view 'hasil_kuis' yang dimodifikasi sedikit nantinya
+        return view('hasil_kuis', compact('materi', 'soals', 'jawabanSiswa', 'nilai', 'benar', 'totalSoal', 'isLulus'));
+    }
+
+    // =========================================================
+    // FUNGSI UJIAN AKHIR MODUL
+    // =========================================================
+    public function kuisModul($id)
+    {
+        $modul = Modul::with(['soals' => function($q) {
+            $q->where('tipe_soal', 'ujian_modul');
+        }])->findOrFail($id);
+        
+        return view('ujian_modul', compact('modul')); // Nanti kita buat tampilannya
+    }
+
+    // =========================================================
+    // UPDATE FUNGSI REKAP DAN RIWAYAT
+    // =========================================================
+    public function rekapNilai()
+    {
+        $data_nilai = RiwayatNilai::with(['user', 'modul'])->latest()->get();
+        return view('rekap_nilai', compact('data_nilai'));
+    }
+
+    public function riwayatKuis()
+    {
+        $riwayat = RiwayatNilai::with('modul')
+                    ->where('user_id', auth()->id())
+                    ->latest()
+                    ->get();
+        return view('riwayat_kuis', compact('riwayat'));
+    }
 }

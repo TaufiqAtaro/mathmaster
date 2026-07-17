@@ -1,32 +1,31 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Soal Kuis - Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="p-8 bg-gray-100 min-h-screen">
-    
-    <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md border-t-4 border-yellow-500">
-        <h1 class="text-2xl font-bold mb-6 text-gray-800">Edit Soal Kuis</h1>
-        
-        @if ($errors->any())
-            <div class="mb-4 p-3 bg-red-50 text-red-700 rounded border-l-4 border-red-500">
-                <ul class="list-disc list-inside text-sm">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+@extends('layouts.master')
+@section('title', 'Edit Soal')
 
-        <form action="/soal/{{ $soal->id }}" method="POST">
-            @csrf
-            @method('PUT')
-            
-            <div class="mb-6">
-                <label class="block text-gray-700 font-bold mb-2">Pilih Modul Induk</label>
-                <select name="modul_id" class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-gray-50" required>
+@section('content')
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-black text-gray-900">Edit Soal Kuis</h1>
+        <a href="/kelola-modul" class="text-gray-500 hover:text-blue-600 font-bold transition">Batal & Kembali</a>
+    </div>
+    
+    <form action="/soal/{{ $soal->id }}" method="POST" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 space-y-6">
+        @csrf
+        @method('PUT') <!-- Wajib ada untuk proses update -->
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50 p-6 rounded-xl border border-blue-100 mb-6">
+            <!-- Tipe Soal -->
+            <div>
+                <label class="block font-bold text-gray-700 mb-2">Tipe Kuis <span class="text-red-500">*</span></label>
+                <select name="tipe_soal" class="w-full border-gray-300 rounded-xl p-3 focus:ring-blue-500" required>
+                    <option value="kuis_materi" {{ $soal->tipe_soal == 'kuis_materi' ? 'selected' : '' }}>Kuis Per Materi (Syarat Lulus)</option>
+                    <option value="ujian_modul" {{ $soal->tipe_soal == 'ujian_modul' ? 'selected' : '' }}>Ujian Akhir Modul (Boss Fight)</option>
+                </select>
+            </div>
+
+            <!-- Pilih Modul -->
+            <div>
+                <label class="block font-bold text-gray-700 mb-2">Untuk Modul Apa? <span class="text-red-500">*</span></label>
+                <select name="modul_id" class="w-full border-gray-300 rounded-xl p-3 focus:ring-blue-500" required>
                     @foreach($data_modul as $modul)
                         <option value="{{ $modul->id }}" {{ $soal->modul_id == $modul->id ? 'selected' : '' }}>
                             {{ $modul->judul_modul }} (Kelas {{ $modul->tingkat_kelas }})
@@ -35,61 +34,73 @@
                 </select>
             </div>
 
-            <div class="mb-6">
-                <label class="block text-gray-700 font-bold mb-2">Pertanyaan</label>
-                <textarea name="pertanyaan" class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500" rows="3" required>{{ $soal->pertanyaan }}</textarea>
+            <!-- Pilih Materi -->
+            <div class="md:col-span-2">
+                <label class="block font-bold text-gray-700 mb-2">Untuk Materi Apa?</label>
+                <select name="materi_id" class="w-full border-gray-300 rounded-xl p-3 focus:ring-blue-500">
+                    <option value="">-- Abaikan jika ini Soal Ujian Akhir --</option>
+                    @foreach($data_modul as $modul)
+                        <optgroup label="MODUL: {{ strtoupper($modul->judul_modul) }}">
+                            @foreach($modul->materis as $materi)
+                                <option value="{{ $materi->id }}" {{ $soal->materi_id == $materi->id ? 'selected' : '' }}>
+                                    Materi: {{ $materi->judul_materi }}
+                                </option>
+                            @endforeach
+                        </optgroup>
+                    @endforeach
+                </select>
+                <p class="text-sm text-gray-500 mt-2"><b>Catatan:</b> Wajib diisi jika kamu memilih tipe <b>"Kuis Per Materi"</b>.</p>
             </div>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-yellow-50 p-4 rounded-lg border border-yellow-100">
-                <div>
-                    <label class="block text-gray-700 font-bold mb-1 text-sm">Opsi A</label>
-                    <input type="text" name="opsi_a" value="{{ $soal->opsi_a }}" class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-yellow-400" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-bold mb-1 text-sm">Opsi B</label>
-                    <input type="text" name="opsi_b" value="{{ $soal->opsi_b }}" class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-yellow-400" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-bold mb-1 text-sm">Opsi C</label>
-                    <input type="text" name="opsi_c" value="{{ $soal->opsi_c }}" class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-yellow-400" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-bold mb-1 text-sm">Opsi D</label>
-                    <input type="text" name="opsi_d" value="{{ $soal->opsi_d }}" class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-yellow-400" required>
-                </div>
+        <!-- Pertanyaan -->
+        <div>
+            <label class="block font-bold text-gray-700 mb-2">Pertanyaan <span class="text-red-500">*</span></label>
+            <textarea name="pertanyaan" rows="3" class="w-full border-gray-300 rounded-xl p-3 focus:ring-blue-500" required>{{ $soal->pertanyaan }}</textarea>
+        </div>
+
+        <!-- Opsi Jawaban -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block font-bold text-gray-700 mb-2">Opsi A <span class="text-red-500">*</span></label>
+                <input type="text" name="opsi_a" value="{{ $soal->opsi_a }}" class="w-full border-gray-300 rounded-xl p-3" required>
             </div>
-
-            <div class="mb-6">
-                <label class="block text-gray-700 font-bold mb-2">Kunci Jawaban Benar</label>
-                <div class="flex gap-4">
-                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50">
-                        <input type="radio" name="jawaban_benar" value="a" class="w-4 h-4 text-yellow-600" {{ $soal->jawaban_benar == 'a' ? 'checked' : '' }} required> A
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50">
-                        <input type="radio" name="jawaban_benar" value="b" class="w-4 h-4 text-yellow-600" {{ $soal->jawaban_benar == 'b' ? 'checked' : '' }}> B
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50">
-                        <input type="radio" name="jawaban_benar" value="c" class="w-4 h-4 text-yellow-600" {{ $soal->jawaban_benar == 'c' ? 'checked' : '' }}> C
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50">
-                        <input type="radio" name="jawaban_benar" value="d" class="w-4 h-4 text-yellow-600" {{ $soal->jawaban_benar == 'd' ? 'checked' : '' }}> D
-                    </label>
-                </div>
+            <div>
+                <label class="block font-bold text-gray-700 mb-2">Opsi B <span class="text-red-500">*</span></label>
+                <input type="text" name="opsi_b" value="{{ $soal->opsi_b }}" class="w-full border-gray-300 rounded-xl p-3" required>
             </div>
-
-            <div class="mb-8">
-                <label class="block text-gray-700 font-bold mb-2">Pembahasan (Opsional)</label>
-                <textarea name="pembahasan" class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500" rows="2">{{ $soal->pembahasan }}</textarea>
+            <div>
+                <label class="block font-bold text-gray-700 mb-2">Opsi C <span class="text-red-500">*</span></label>
+                <input type="text" name="opsi_c" value="{{ $soal->opsi_c }}" class="w-full border-gray-300 rounded-xl p-3" required>
             </div>
-
-            <div class="flex justify-between items-center">
-                <a href="/kelola-modul" class="text-gray-500 hover:text-gray-700 font-bold transition">Batal</a>
-                <button type="submit" class="bg-yellow-500 text-white font-bold px-8 py-3 rounded-lg hover:bg-yellow-600 shadow-md transition">
-                    Update Soal
-                </button>
+            <div>
+                <label class="block font-bold text-gray-700 mb-2">Opsi D <span class="text-red-500">*</span></label>
+                <input type="text" name="opsi_d" value="{{ $soal->opsi_d }}" class="w-full border-gray-300 rounded-xl p-3" required>
             </div>
-        </form>
-    </div>
+        </div>
 
-</body>
-</html>
+        <!-- Kunci Jawaban -->
+        <div>
+            <label class="block font-bold text-gray-700 mb-2">Kunci Jawaban Benar <span class="text-red-500">*</span></label>
+            <select name="jawaban_benar" class="w-full border-gray-300 rounded-xl p-3 focus:ring-blue-500" required>
+                <option value="a" {{ $soal->jawaban_benar == 'a' ? 'selected' : '' }}>Opsi A</option>
+                <option value="b" {{ $soal->jawaban_benar == 'b' ? 'selected' : '' }}>Opsi B</option>
+                <option value="c" {{ $soal->jawaban_benar == 'c' ? 'selected' : '' }}>Opsi C</option>
+                <option value="d" {{ $soal->jawaban_benar == 'd' ? 'selected' : '' }}>Opsi D</option>
+            </select>
+        </div>
+
+        <!-- Pembahasan -->
+        <div>
+            <label class="block font-bold text-gray-700 mb-2">Pembahasan (Opsional)</label>
+            <textarea name="pembahasan" rows="3" class="w-full border-gray-300 rounded-xl p-3 focus:ring-blue-500">{{ $soal->pembahasan }}</textarea>
+        </div>
+
+        <div class="pt-4 border-t border-gray-100">
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-lg py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1">
+                💾 Update Soal Kuis
+            </button>
+        </div>
+    </form>
+</div>
+@endsection
