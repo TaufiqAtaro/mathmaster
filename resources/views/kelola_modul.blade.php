@@ -1,151 +1,75 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Modul MathMaster</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="p-8 bg-gray-100">
-    
-    <div class="max-w-4xl mx-auto">
-        <!-- Tombol Navigasi Admin -->
-        <div class="flex justify-end gap-3 mb-6 bg-white p-3 rounded-lg shadow-sm border border-gray-200">
-            <!-- Tombol POV Peserta -->
-            <a href="/" target="_blank" class="bg-blue-100 text-blue-700 hover:bg-blue-200 px-4 py-2 rounded-md font-bold text-sm transition flex items-center">
-                Lihat Web
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h2 class="font-black text-2xl text-gray-800 leading-tight">
+                {{ __('📚 Kelola Modul') }}
+            </h2>
+            <a href="/kelola-modul/tambah" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-5 rounded-xl shadow-lg transition text-sm">
+                + Tambah Modul Baru
             </a>
+        </div>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            <!-- Tombol Dashboard -->
-            <a href="/dashboard" class="bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-md font-bold text-sm transition flex items-center">
-                Dashboard
-            </a>
-
-            <!-- Tombol Log Out -->
-            <form action="{{ route('logout') }}" method="POST" class="inline m-0">
-                @csrf
-                <button type="submit" class="bg-red-500 text-white hover:bg-red-600 px-4 py-2 rounded-md font-bold text-sm transition flex items-center">
-                     Log Out
-                </button>
-            </form>
-        </div>
-
-        @if(session('success'))
-            <div class="mb-4 px-4 py-3 bg-green-100 border-l-4 border-green-500 text-green-700 rounded shadow-sm">
-                <span class="font-bold">{{ session('success') }}</span>
-            </div>
-        @endif
-
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">Daftar Modul MathMaster</h1>
-            <div class="space-x-2 flex items-center">
-                <a href="/rekap-nilai" class="bg-gray-800 text-white px-4 py-2 rounded font-bold hover:bg-gray-900 shadow flex items-center gap-2 mr-2">Rekap Nilai Siswa</a> 
-                <a href="/kelola-modul/tambah" class="bg-green-600 text-white px-4 py-2 rounded font-bold hover:bg-green-700 shadow">+ Tambah Modul</a>
-                <a href="/materi/tambah" class="bg-purple-600 text-white px-4 py-2 rounded font-bold hover:bg-purple-700 shadow">+ Tambah Materi</a>
-                <a href="/soal/tambah" class="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 shadow">+ Tambah Soal</a>
-            </div>
-        </div>
-
-        <!-- Grid Modul -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($data_modul as $modul)
-                <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition overflow-hidden border border-gray-100 flex flex-col relative">
-                    
-                    <!-- Area Gambar Utuh -->
-                    @if($modul->gambar_modul)
-                        <img src="{{ asset('storage/' . $modul->gambar_modul) }}" alt="Cover" class="w-full h-40 object-contain bg-gray-50 border-b border-gray-100">
-                    @else
-                        <div class="w-full h-40 bg-purple-100 flex items-center justify-center border-b border-purple-200">
-                        </div>
-                    @endif
-
-                    <!-- Area Konten -->
-                    <div class="p-5 flex-grow">
-                        <div class="flex justify-between items-start mb-2">
-                            <h2 class="font-black text-xl text-gray-800">{{ $modul->judul_modul }}</h2> 
-                            <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-md shrink-0">
-                                Kls {{ $modul->tingkat_kelas }}
-                            </span>
-                        </div>
-                        <p class="text-gray-500 text-sm mb-4 line-clamp-2">{{ $modul->deskripsi }}</p>
-
-                        <!-- Tampilan Singkat Materi -->
-                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 mb-3">
-                            <h3 class="font-bold text-xs text-gray-700 mb-1">Materi di dalam:</h3>
-                            <ul class="text-xs text-gray-600">
-                                @forelse($modul->materis as $materi)
-                                <li class="flex justify-between items-center mb-2 border-b border-gray-200 pb-1">
-                                    <span class="truncate pr-2">{{ $materi->judul_materi }}</span>
-                                    
-                                    <div class="flex gap-1 shrink-0">
-                                        <a href="/materi/{{ $materi->id }}/edit" class="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-1 px-2 rounded text-xs shadow-sm transition">
-                                            Edit
-                                        </a>
-                                        <form action="/materi/{{ $materi->id }}" method="POST" class="inline-block m-0" onsubmit="return confirm('Yakin mau menghapus materi ini? File lampiran akan ikut terhapus permanen.');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded text-xs shadow-sm transition">
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    </div>
-                                </li>
-                                @empty
-                                    <li class="italic text-gray-400">Belum ada materi</li>
-                                @endforelse
-                            </ul>
-                        </div>
-
-                        <!-- Tampilan Singkat Soal Kuis -->
-                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                            <h3 class="font-bold text-xs text-blue-800 mb-1">Soal Kuis:</h3>
-                            <ul class="text-xs text-gray-600">
-                                @forelse($modul->soals as $soal)
-                                <li class="flex justify-between items-center mb-2 border-b border-blue-200 pb-1">
-                                    <!-- Menampilkan 30 huruf pertama dari soal agar tidak kepanjangan -->
-                                    <span class="truncate pr-2 text-blue-900" title="{{ $soal->pertanyaan }}">{{ \Illuminate\Support\Str::limit($soal->pertanyaan, 30) }}</span>
-                                    
-                                    <div class="flex gap-1 shrink-0">
-                                        <!-- Tombol Edit Soal -->
-                                        <a href="/soal/{{ $soal->id }}/edit" class="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-1 px-2 rounded text-xs shadow-sm transition">
-                                            Edit
-                                        </a>
-                                        <!-- Tombol Hapus Soal -->
-                                        <form action="/soal/{{ $soal->id }}" method="POST" class="inline-block m-0" onsubmit="return confirm('Yakin mau menghapus soal ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded text-xs shadow-sm transition">
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    </div>
-                                </li>
-                                @empty
-                                    <li class="italic text-blue-400">Belum ada soal</li>
-                                @endforelse
-                            </ul>
-                        </div>
-
-                    </div>
-
-                    <!-- Area Tombol Aksi di Bawah (Modul) -->
-                    <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-between">
-                        <a href="/kelola-modul/{{ $modul->id }}/edit" class="text-yellow-600 hover:text-yellow-800 font-bold text-sm bg-yellow-100 hover:bg-yellow-200 px-4 py-1.5 rounded transition">
-                            Edit Modul
-                        </a>
-                        
-                        <form action="/kelola-modul/{{ $modul->id }}" method="POST" class="m-0">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-800 font-bold text-sm bg-red-100 hover:bg-red-200 px-4 py-1.5 rounded transition" onclick="return confirm('Yakin hapus modul ini beserta isinya?')">
-                                Hapus Modul
-                            </button>
-                        </form>
-                    </div>
-
+            @if(session('sukses'))
+                <div class="mb-6 bg-green-50 text-green-700 px-6 py-4 rounded-2xl font-bold border border-green-200">
+                    ✅ {{ session('sukses') }}
                 </div>
-            @endforeach
+            @endif
+
+            <!-- Grid Kartu Modul -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @forelse($data_modul as $modul)
+                    <div class="bg-white rounded-3xl shadow-sm hover:shadow-md transition border border-gray-100 overflow-hidden flex flex-col">
+                        <!-- Cover Area -->
+                        <div class="h-40 w-full bg-gray-100 relative">
+                            @if($modul->gambar_modul)
+                                <img src="{{ asset('storage/' . $modul->gambar_modul) }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center text-4xl">📘</div>
+                            @endif
+                            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur text-purple-700 font-bold px-3 py-1 rounded-lg text-xs shadow-sm">
+                                Kelas {{ $modul->tingkat_kelas }}
+                            </div>
+                        </div>
+
+                        <!-- Info Area -->
+                        <div class="p-6 flex-grow">
+                            <h3 class="font-black text-xl text-gray-900 mb-2">{{ $modul->judul_modul }}</h3>
+                            <p class="text-sm text-gray-500 line-clamp-2">{{ $modul->deskripsi }}</p>
+                        </div>
+
+                        <!-- Tombol Aksi Bawah -->
+                        <div class="p-4 border-t border-gray-50 flex items-center justify-between bg-gray-50/50">
+                            <!-- Tombol Utama: Masuk ke Materi -->
+                            <a href="/kelola-modul/{{ $modul->id }}/materi" class="bg-purple-100 text-purple-700 hover:bg-purple-200 px-4 py-2 rounded-xl text-sm font-bold transition">
+                                Buka Materi ➡️
+                            </a>
+                            
+                            <!-- Aksi Edit & Hapus Modul -->
+                            <div class="flex gap-2">
+                                <a href="/kelola-modul/{{ $modul->id }}/edit" class="text-yellow-600 hover:bg-yellow-100 p-2 rounded-lg transition" title="Edit Modul">
+                                    ✏️
+                                </a>
+                                <form action="/kelola-modul/{{ $modul->id }}" method="POST" onsubmit="return confirm('Yakin hapus modul ini beserta semua isinya?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:bg-red-100 p-2 rounded-lg transition" title="Hapus Modul">
+                                        🗑️
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-full py-16 text-center bg-white rounded-3xl border border-dashed border-gray-300">
+                        <p class="font-bold text-gray-500">Belum ada modul. Silakan buat modul pertama!</p>
+                    </div>
+                @endforelse
+            </div>
+
         </div>
     </div>
-
-</body>
-</html>
+</x-app-layout>

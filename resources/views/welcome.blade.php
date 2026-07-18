@@ -15,7 +15,7 @@
 @endpush
 
 @section('content')
-    <!-- Hero Section (Desain Asli Ataro) -->
+    <!-- Hero Section -->
     <div class="pt-12 pb-16 flex items-center relative overflow-hidden bg-gradient-to-b from-white to-gray-50">
         <!-- Dekorasi Background -->
         <div class="absolute top-10 left-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
@@ -95,7 +95,7 @@
         </div>
     </div>
 
-    <!-- Fitur Section (Pembaruan: Fokus ke Gembok & Boss Fight) -->
+    <!-- Fitur Section -->
     <section id="fitur" class="bg-white py-20 border-t border-gray-100">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto mb-16">
@@ -132,7 +132,7 @@
         </div>
     </section>
 
-    <!-- Etalase Modul Section (Desain Asli Ataro) -->
+    <!-- Etalase Modul Section -->
     <section class="bg-gray-50 py-20 border-t border-gray-200">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-end mb-12">
@@ -150,7 +150,7 @@
                     @forelse($data_modul as $modul)
                         <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden border border-gray-100 flex flex-col">
                             @if($modul->gambar_modul)
-                                <img src="{{ asset('storage/' . $modul->gambar_modul) }}" alt="Cover" class="w-full h-48 object-contain bg-gray-50 border-b border-gray-100 p-2">
+                                <img src="{{ asset('storage/' . $modul->gambar_modul) }}" alt="Cover" class="w-full h-48 object-cover">
                             @else
                                 <div class="w-full h-48 bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center text-5xl">
                                     📘

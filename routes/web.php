@@ -23,16 +23,11 @@ Route::get('/tentang-kami', function () {
 
 /*
 |--------------------------------------------------------------------------
-| 2. PENGATUR ARAH SETELAH LOGIN 
+| 2. DASHBOARD / CONTROL PANEL
 |--------------------------------------------------------------------------
 */
 Route::get('/dashboard', function () {
-    // Jika yang login adalah Admin, arahkan ke halaman kelola modul
-    if (auth()->user()->role === 'admin') {
-        return redirect('/kelola-modul'); 
-    }
-    // Jika yang login Siswa, langsung arahkan ke ruang belajar
-    return redirect('/modul');
+    return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
@@ -102,8 +97,36 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/soal/{id}', [SoalController::class, 'update']);
     Route::delete('/soal/{id}', [SoalController::class, 'destroy']);
 
-    // Rekap Nilai Siswa
-    Route::get('/rekap-nilai', [ModulController::class, 'rekapNilai']);
+    // Masuk ke dalam Modul untuk melihat/kelola Materi
+    Route::get('/kelola-modul/{modul_id}/materi', [App\Http\Controllers\MateriController::class, 'indexModul']);
+    
+    // Masuk ke dalam Materi untuk melihat/kelola Soal
+    Route::get('/materi/{materi_id}/soal', [App\Http\Controllers\SoalController::class, 'indexMateri']);
+
+    // ==============================================
+    // KELOLA UJIAN AKHIR (BOSS FIGHT)
+    // ==============================================
+    Route::get('/kelola-ujian', [App\Http\Controllers\UjianAdminController::class, 'index']);
+    Route::get('/kelola-ujian/{modul_id}', [App\Http\Controllers\UjianAdminController::class, 'show']);
+    Route::get('/ujian/tambah', [App\Http\Controllers\UjianAdminController::class, 'create']);
+    Route::post('/ujian', [App\Http\Controllers\UjianAdminController::class, 'store']);
+    Route::get('/ujian/{id}/edit', [App\Http\Controllers\UjianAdminController::class, 'edit']);
+    Route::put('/ujian/{id}', [App\Http\Controllers\UjianAdminController::class, 'update']);
+    Route::delete('/ujian/{id}', [App\Http\Controllers\UjianAdminController::class, 'destroy']);
+
+    // ==============================================
+    // KELOLA SOAL KUIS (PER MATERI)
+    // ==============================================
+    Route::get('/soal/tambah', [App\Http\Controllers\SoalController::class, 'create']);
+    Route::post('/soal', [App\Http\Controllers\SoalController::class, 'store']);
+    Route::get('/soal/{id}/edit', [App\Http\Controllers\SoalController::class, 'edit']);
+    Route::put('/soal/{id}', [App\Http\Controllers\SoalController::class, 'update']);
+    Route::delete('/soal/{id}', [App\Http\Controllers\SoalController::class, 'destroy']);
+
+    // ==============================================
+    // REKAP NILAI SISWA (ADMIN)
+    // ==============================================
+    Route::get('/rekap-nilai', [App\Http\Controllers\ModulController::class, 'rekapNilai']);
 });
 
 require __DIR__.'/auth.php';

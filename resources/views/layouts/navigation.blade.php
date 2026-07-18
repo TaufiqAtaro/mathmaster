@@ -15,9 +15,19 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <!-- Menu Kelola Modul -->
-                    <x-nav-link :href="url('/kelola-modul')" :active="request()->is('kelola_modul*')">
-                        Kelola Modul
+                    
+                    <!-- Menu Admin Kustom -->
+                    <x-nav-link href="/kelola-modul" :active="request()->is('kelola-modul*') || request()->is('materi*')">
+                        Kelola Modul & Materi
+                    </x-nav-link>
+                    <x-nav-link href="/kelola-ujian" :active="request()->is('kelola-ujian*')">
+                        Kelola Ujian
+                    </x-nav-link>
+                    <x-nav-link href="/rekap-nilai" :active="request()->is('rekap-nilai*')">
+                        Rekap Nilai Siswa
+                    </x-nav-link>
+                    <x-nav-link :href="url('/')" class="text-purple-600 font-bold border-b-2 border-transparent hover:border-purple-600">
+                        {{ __('Lihat Web 🌐') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -70,11 +80,27 @@
 
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
+            <div class="pt-2 pb-3 space-y-1">
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+
+                <!-- Menu Admin Kustom (Versi HP) -->
+                <x-responsive-nav-link href="/kelola-modul" :active="request()->is('kelola-modul*') || request()->is('materi*')">
+                    Kelola Modul & Materi
+                </x-responsive-nav-link>
+                
+                <x-responsive-nav-link href="/kelola-ujian" :active="request()->is('kelola-ujian*')">
+                    Kelola Ujian
+                </x-responsive-nav-link>
+                
+                <x-responsive-nav-link href="/rekap-nilai" :active="request()->is('rekap-nilai*')">
+                    Rekap Nilai Siswa
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="url('/')" class="text-purple-600 font-bold">
+                    {{ __('Lihat Web 🌐') }}
+                </x-responsive-nav-link>
+            </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">

@@ -7,82 +7,101 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Materi;
 use App\Models\Modul; 
 
-
 class MateriController extends Controller
 {
-    // 1. Fungsi untuk menampilkan form tambah materi
-    public function create()
+    // =================================================================
+    // 1. TAMPILKAN DAFTAR MATERI (Di dalam Modul)
+    // =================================================================
+    public function indexModul($modul_id)
     {
-        $data_modul = Modul::all(); 
+        $modul = Modul::findOrFail($modul_id);
+        $materis = Materi::where('modul_id', $modul_id)->latest()->get();
         
-        return view('tambah_materi', compact('data_modul'));
+        return view('kelola_materi', compact('modul', 'materis'));
     }
 
-// 2. Fungsi untuk menyimpan data ke database (beserta file)
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'modul_id' => 'required',
-        'judul_materi' => 'required',
-        'isi_materi' => 'required',
-        'file_lampiran' => 'nullable|mimes:pdf,doc,docx,jpg,png|max:5120',
-        'link_video' => 'nullable|url'
-    ]);
-
-    if ($request->hasFile('file_lampiran')) {
-        $validated['file_lampiran'] = $request->file('file_lampiran')->store('lampiran_materi', 'public');
-    }
-
-    Materi::create($validated);
-
-    return redirect('/kelola-modul')->with('success', 'Materi baru berhasil ditambahkan!');
-}
-public function edit($id)
-{
-    $materi = Materi::findOrFail($id);
-    $data_modul = Modul::all(); 
-    
-    return view('edit_materi', compact('materi', 'data_modul'));
-}
-
-public function update(Request $request, $id)
-{
-    $validated = $request->validate([
-        'modul_id' => 'required',
-        'judul_materi' => 'required',
-        'isi_materi' => 'required',
-        'file_lampiran' => 'nullable|mimes:pdf,doc,docx,jpg,png|max:5120',
-        'link_video' => 'nullable|url'
-    ]);
-
-    $materi = Materi::findOrFail($id);
-
-    // Jika ada upload file baru
-    if ($request->hasFile('file_lampiran')) {
-        // Hapus file lama jika ada
-        if ($materi->file_lampiran) {
-            Storage::disk('public')->delete($materi->file_lampiran);
+    // =================================================================
+    // 2. TAMBAH MATERI
+    // =================================================================
+    public function create(Request $request)
+    {
+        // Menangkap modul_id dari URL (?modul_id=...)
+        $modul_id = $request->query('modul_id');
+        
+        if (!$modul_id) {
+            return redirect('/kelola-modul')->with('error', 'Silakan pilih modul terlebih dahulu.');
         }
-        // Simpan file baru
-        $validated['file_lampiran'] = $request->file('file_lampiran')->store('lampiran_materi', 'public');
+
+        return view('tambah_materi', compact('modul_id'));
     }
 
-    $materi->update($validated);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'modul_id' => 'required|exists:moduls,id',
+            'judul_materi' => 'required|string|max:255',
+            'isi_materi' => 'required|string',
+            'file_lampiran' => 'nullable|mimes:pdf,doc,docx,jpg,png|max:5120',
+            'link_video' => 'nullable|url'
+        ]);
 
-    return redirect('/kelola-modul')->with('success', 'Materi berhasil diperbarui!');
-}
-public function destroy($id)
+        if ($request->hasFile('file_lampiran')) {
+            $validated['file_lampiran'] = $request->file('file_lampiran')->store('lampiran_materi', 'public');
+        }
+
+        Materi::create($validated);
+
+        return redirect('/kelola-modul/' . $request->modul_id . '/materi')->with('sukses', 'Materi baru berhasil ditambahkan!');
+    }
+
+    // =================================================================
+    // 3. EDIT MATERI
+    // =================================================================
+    public function edit($id)
+    {
+        $materi = Materi::findOrFail($id);
+        return view('edit_materi', compact('materi'));
+    }
+
+    public function update(Request $request, $id)
     {
         $materi = Materi::findOrFail($id);
 
-        // Bersihkan dulu file fisiknya dari folder penyimpanan jika ada
+        $validated = $request->validate([
+            'judul_materi' => 'required|string|max:255',
+            'isi_materi' => 'required|string',
+            'file_lampiran' => 'nullable|mimes:pdf,doc,docx,jpg,png|max:5120',
+            'link_video' => 'nullable|url'
+        ]);
+
+        if ($request->hasFile('file_lampiran')) {
+            // Hapus file lama jika ada
+            if ($materi->file_lampiran) {
+                Storage::disk('public')->delete($materi->file_lampiran);
+            }
+            $validated['file_lampiran'] = $request->file('file_lampiran')->store('lampiran_materi', 'public');
+        }
+
+        $materi->update($validated);
+
+        return redirect('/kelola-modul/' . $materi->modul_id . '/materi')->with('sukses', 'Materi berhasil diperbarui!');
+    }
+
+    // =================================================================
+    // 4. HAPUS MATERI
+    // =================================================================
+    public function destroy($id)
+    {
+        $materi = Materi::findOrFail($id);
+        $modul_id = $materi->modul_id; // Simpan ID modul untuk arah kembali
+        
+        // Bersihkan dulu file fisiknya dari storage
         if ($materi->file_lampiran) {
             Storage::disk('public')->delete($materi->file_lampiran);
         }
 
-        // Setelah filenya hilang, baru hapus datanya dari database
         $materi->delete();
 
-        return redirect('/kelola-modul')->with('success', 'Materi beserta filenya berhasil dihapus bersih!');
+        return redirect('/kelola-modul/' . $modul_id . '/materi')->with('sukses', 'Materi beserta filenya berhasil dihapus!');
     }
 }

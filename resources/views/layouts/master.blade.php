@@ -21,7 +21,7 @@
 
     <!-- NAVBAR (HEADER) -->
     <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <!-- Kiri: Logo & Menu -->
                 <div class="flex items-center gap-8">
@@ -32,26 +32,16 @@
                         <span class="font-black text-xl text-gray-900 tracking-tight">MathMaster</span>
                     </a>
 
-                    <!-- Menu Navigasi Tengah -->
+                    <!-- Menu Navigasi Tengah (Semua Role Bisa Lihat) -->
                     <div class="hidden md:flex space-x-1">
-                        
-                        <!-- Beranda (Selalu Tampil) -->
                         <a href="/" class="px-3 py-2 rounded-md text-sm font-bold {{ request()->is('/') ? 'bg-purple-50 text-purple-700' : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50' }}">Beranda</a>
                         
-                        @if(auth()->check() && auth()->user()->role === 'admin')
-                            <!-- Navigasi KHUSUS Admin -->
-                            <a href="/kelola-modul" class="px-3 py-2 rounded-md text-sm font-bold {{ request()->is('kelola-modul*') ? 'bg-purple-50 text-purple-700' : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50' }}">Kelola Modul</a>
-                            <a href="/rekap-nilai" class="px-3 py-2 rounded-md text-sm font-bold {{ request()->is('rekap-nilai*') ? 'bg-purple-50 text-purple-700' : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50' }}">Rekap Nilai</a>
-                        @else
-                            <!-- Navigasi Siswa (Tampil untuk Siswa DAN Pengunjung yang belum login) -->
-                            <a href="/modul" class="px-3 py-2 rounded-md text-sm font-bold {{ request()->is('modul*') || request()->is('belajar*') ? 'bg-purple-50 text-purple-700' : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50' }}">Ruang Kelas</a>
-                            
-                            <a href="/ruang-ujian" class="px-3 py-2 rounded-md text-sm font-bold {{ request()->is('ruang-ujian*') ? 'bg-purple-50 text-purple-700' : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50' }}">Ruang Ujian</a>
-                            
-                            <a href="/riwayat-kuis" class="px-3 py-2 rounded-md text-sm font-bold {{ request()->is('riwayat-kuis*') ? 'bg-purple-50 text-purple-700' : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50' }}">Riwayat Nilai</a>
-                        @endif
+                        <a href="/modul" class="px-3 py-2 rounded-md text-sm font-bold {{ request()->is('modul*') || request()->is('belajar*') ? 'bg-purple-50 text-purple-700' : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50' }}">Ruang Kelas</a>
+                        
+                        <a href="/ruang-ujian" class="px-3 py-2 rounded-md text-sm font-bold {{ request()->is('ruang-ujian*') ? 'bg-purple-50 text-purple-700' : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50' }}">Ruang Ujian</a>
+                        
+                        <a href="/riwayat-kuis" class="px-3 py-2 rounded-md text-sm font-bold {{ request()->is('riwayat-kuis*') ? 'bg-purple-50 text-purple-700' : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50' }}">Riwayat Nilai</a>
 
-                        <!-- Tentang Kami (Selalu Tampil) -->
                         <a href="/tentang-kami" class="px-3 py-2 rounded-md text-sm font-bold {{ request()->is('tentang-kami*') ? 'bg-purple-50 text-purple-700' : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50' }}">Tentang Kami</a>
                     </div>
                 </div>
@@ -60,10 +50,19 @@
                 <div class="flex items-center">
                     @auth
                         <div class="flex items-center gap-4">
-                            <div class="text-right hidden sm:block">
+                            
+                            <!-- Tombol Control Panel KHUSUS Admin di Kanan -->
+                            @if(auth()->user()->role === 'admin')
+                                <a href="/dashboard" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-gray-800 transition flex items-center gap-2">
+                                    ⚙️ Control Panel
+                                </a>
+                            @endif
+
+                            <div class="text-right hidden sm:block border-l border-gray-200 pl-4 ml-2">
                                 <p class="text-sm font-bold text-gray-900 leading-tight">{{ auth()->user()->name }}</p>
                                 <p class="text-xs text-gray-500 font-medium capitalize">{{ auth()->user()->role }}</p>
                             </div>
+                            
                             <!-- Tombol Logout Bawaan Breeze/Laravel -->
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
