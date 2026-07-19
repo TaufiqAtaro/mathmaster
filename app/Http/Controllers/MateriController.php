@@ -25,7 +25,6 @@ class MateriController extends Controller
     // =================================================================
     public function create(Request $request)
     {
-        // Menangkap modul_id dari URL (?modul_id=...)
         $modul_id = $request->query('modul_id');
         
         if (!$modul_id) {
@@ -42,11 +41,16 @@ class MateriController extends Controller
             'judul_materi' => 'required|string|max:255',
             'isi_materi' => 'required|string',
             'file_lampiran' => 'nullable|mimes:pdf,doc,docx,jpg,png|max:5120',
-            'link_video' => 'nullable|url'
+            // Ubah link_video menjadi format upload file video (maksimal 50MB)
+            'link_video' => 'nullable|mimes:mp4,mov,avi,webm|max:51200'
         ]);
 
         if ($request->hasFile('file_lampiran')) {
             $validated['file_lampiran'] = $request->file('file_lampiran')->store('lampiran_materi', 'public');
+        }
+
+        if ($request->hasFile('link_video')) {
+            $validated['link_video'] = $request->file('link_video')->store('video_materi', 'public');
         }
 
         Materi::create($validated);
@@ -71,15 +75,22 @@ class MateriController extends Controller
             'judul_materi' => 'required|string|max:255',
             'isi_materi' => 'required|string',
             'file_lampiran' => 'nullable|mimes:pdf,doc,docx,jpg,png|max:5120',
-            'link_video' => 'nullable|url'
+            // Ubah link_video menjadi format upload file video (maksimal 50MB)
+            'link_video' => 'nullable|mimes:mp4,mov,avi,webm|max:51200'
         ]);
 
         if ($request->hasFile('file_lampiran')) {
-            // Hapus file lama jika ada
             if ($materi->file_lampiran) {
                 Storage::disk('public')->delete($materi->file_lampiran);
             }
             $validated['file_lampiran'] = $request->file('file_lampiran')->store('lampiran_materi', 'public');
+        }
+
+        if ($request->hasFile('link_video')) {
+            if ($materi->link_video) {
+                Storage::disk('public')->delete($materi->link_video);
+            }
+            $validated['link_video'] = $request->file('link_video')->store('video_materi', 'public');
         }
 
         $materi->update($validated);
@@ -93,11 +104,15 @@ class MateriController extends Controller
     public function destroy($id)
     {
         $materi = Materi::findOrFail($id);
-        $modul_id = $materi->modul_id; // Simpan ID modul untuk arah kembali
+        $modul_id = $materi->modul_id;
         
-        // Bersihkan dulu file fisiknya dari storage
         if ($materi->file_lampiran) {
             Storage::disk('public')->delete($materi->file_lampiran);
+        }
+
+        // Tambahkan penghapusan file video fisik
+        if ($materi->link_video) {
+            Storage::disk('public')->delete($materi->link_video);
         }
 
         $materi->delete();

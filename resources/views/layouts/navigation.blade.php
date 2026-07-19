@@ -27,7 +27,7 @@
                         Rekap Nilai Siswa
                     </x-nav-link>
                     <x-nav-link :href="url('/')" class="text-purple-600 font-bold border-b-2 border-transparent hover:border-purple-600">
-                        {{ __('Lihat Web 🌐') }}
+                        {{ __('Lihat Web') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -98,7 +98,7 @@
                     Rekap Nilai Siswa
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="url('/')" class="text-purple-600 font-bold">
-                    {{ __('Lihat Web 🌐') }}
+                    {{ __('Lihat Web') }}
                 </x-responsive-nav-link>
             </div>
 

@@ -13,36 +13,38 @@
     <div class="container mx-auto px-4 pb-20">
         <!-- Grid Modul Siswa -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($moduls as $modul)
-                <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition overflow-hidden border border-gray-100 flex flex-col relative">
-                    
-                    <!-- Area Gambar -->
+        @foreach($moduls as $modul)
+            <div class="bg-white rounded-3xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 flex flex-col relative group overflow-hidden">
+                
+                <!-- Link Raksasa (Z-index tinggi memastikan klik selalu mengenai link ini) -->
+                <a href="/belajar/{{ $modul->id }}" class="absolute inset-0 z-20" title="Buka Modul"></a>
+
+                <!-- Area Gambar 2:1 -->
+                <div class="w-full aspect-[2/1] relative overflow-hidden bg-gray-100">
                     @if($modul->gambar_modul)
-                        <img src="{{ asset('storage/' . $modul->gambar_modul) }}" alt="Cover" class="w-full h-40 object-contain bg-gray-50 border-b border-gray-100">
+                        <img src="{{ asset('storage/' . $modul->gambar_modul) }}" alt="Cover" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     @else
-                        <div class="w-full h-40 bg-purple-100 flex items-center justify-center border-b border-purple-200">
-                        </div>
+                        <img src="https://placehold.co/800x400/f3f4f6/a8a29e?text=Modul+Belajar" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Placeholder">
                     @endif
-
-                    <!-- Area Konten -->
-                    <div class="p-5 flex-grow">
-                        <div class="flex justify-between items-start mb-2">
-                            <h2 class="font-black text-xl text-gray-800">{{ $modul->judul_modul }}</h2>
-                            <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-md shrink-0">
-                                Kls {{ $modul->tingkat_kelas }}
-                            </span>
-                        </div>
-                        <p class="text-gray-500 text-sm mb-4 line-clamp-2">{{ $modul->deskripsi }}</p>
-                    </div>
-
-                    <!-- Area Tombol Khusus Siswa -->
-                    <div class="p-4 bg-purple-50 border-t border-purple-100 flex justify-center">
-                        <a href="/belajar/{{ $modul->id }}" class="w-full text-center bg-purple-600 text-white font-bold text-sm hover:bg-purple-700 py-2.5 rounded-lg shadow-sm transition">
-                            Mulai Belajar 
-                        </a>
+                    <div class="absolute top-3 right-3 bg-white/90 backdrop-blur text-purple-700 font-bold px-3 py-1 rounded-lg text-xs shadow-sm z-10">
+                        Kelas {{ $modul->tingkat_kelas }}
                     </div>
                 </div>
-            @endforeach
-        </div>
+
+                <!-- Area Konten (Pointer events none agar klik tembus ke link) -->
+                <div class="p-6 flex-grow pointer-events-none">
+                    <h2 class="font-black text-xl text-gray-800 mb-2 group-hover:text-purple-600 transition-colors">{{ $modul->judul_modul }}</h2>
+                    <p class="text-gray-500 text-sm line-clamp-2">{{ $modul->deskripsi }}</p>
+                </div>
+
+                <!-- Area Tombol (Pointer events none agar klik tembus ke link) -->
+                <div class="p-4 bg-purple-50/50 border-t border-purple-50 flex justify-between items-center pointer-events-none group-hover:bg-purple-100 transition-colors">
+                    <span class="font-bold text-purple-600 text-sm">Mulai Belajar</span>
+                    <svg class="w-5 h-5 text-purple-500 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                </div>
+            </div>
+        @endforeach
     </div>
 @endsection

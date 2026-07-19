@@ -27,6 +27,11 @@ Route::get('/tentang-kami', function () {
 |--------------------------------------------------------------------------
 */
 Route::get('/dashboard', function () {
+    // Jika yang mencoba masuk BUKAN admin, tendang ke beranda
+    if (auth()->user()->role !== 'admin') {
+        return redirect('/');
+    }
+    
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -72,9 +77,7 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 | 4. AREA KHUSUS ADMIN (Dilindungi Middleware Admin)
 |--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'admin'])->group(function () {
-    
+*/  
     // Kelola Modul Utama
     Route::get('/kelola-modul', [ModulController::class, 'index']);
     Route::get('/kelola-modul/tambah', [ModulController::class, 'create']);
@@ -127,6 +130,4 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // REKAP NILAI SISWA (ADMIN)
     // ==============================================
     Route::get('/rekap-nilai', [App\Http\Controllers\ModulController::class, 'rekapNilai']);
-});
-
 require __DIR__.'/auth.php';

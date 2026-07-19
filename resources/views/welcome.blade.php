@@ -4,14 +4,16 @@
 
 {{-- Mendorong animasi CSS ke dalam Master Layout --}}
 @push('styles')
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-15px); }
-        100% { transform: translateY(0px); }
-    }
-    .animate-float {
-        animation: float 4s ease-in-out infinite;
-    }
+    <style>
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -25,8 +27,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 <!-- Teks Hero -->
                 <div class="text-center md:text-left space-y-6 md:pr-10">
-                    <div class="inline-block px-4 py-1.5 rounded-full bg-purple-100 text-purple-700 font-bold text-sm mb-2 shadow-sm border border-purple-200">
-                        🚀 E-Learning Matematika Interaktif
+                    <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-purple-100 text-purple-700 font-bold text-sm mb-2 shadow-sm border border-purple-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                        E-Learning Matematika Interaktif
                     </div>
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900">
                         Taklukkan Matematika <br>
@@ -66,7 +71,12 @@
                         </div>
                         <div class="space-y-4">
                             <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">📐</div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                                    </svg>
+                                </div>
                                 <div>
                                     <h4 class="font-bold text-gray-800 text-sm">Geometri Dasar</h4>
                                     <div class="w-32 h-2 bg-gray-200 rounded-full mt-1">
@@ -76,7 +86,11 @@
                                 <span class="ml-auto font-bold text-green-600 text-sm">100</span>
                             </div>
                             <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">🔒</div>
+                                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                </div>
                                 <div>
                                     <h4 class="font-bold text-gray-800 text-sm">Aljabar Lanjut</h4>
                                     <div class="w-32 h-2 bg-gray-200 rounded-full mt-1">
@@ -86,8 +100,10 @@
                                 <span class="ml-auto font-bold text-gray-400 text-xs">Terkunci</span>
                             </div>
                         </div>
-                        <div class="absolute -right-6 -bottom-6 w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center text-4xl shadow-lg border-4 border-white animate-bounce" style="animation-duration: 3s;">
-                            🏆
+                        <div class="absolute -right-6 -bottom-6 w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg border-4 border-white animate-bounce" style="animation-duration: 3s;">
+                            <svg class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                            </svg>
                         </div>
                     </div>
                 </div>
@@ -106,24 +122,30 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Fitur 1 -->
                 <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition duration-300 border border-gray-100 hover:border-purple-300 group">
-                    <div class="w-16 h-16 bg-purple-50 group-hover:bg-purple-600 rounded-2xl flex items-center justify-center text-3xl mb-6 transition duration-300">
-                        <span class="group-hover:scale-110 transition">📚</span>
+                    <div class="w-16 h-16 bg-purple-50 group-hover:bg-purple-600 rounded-2xl flex items-center justify-center mb-6 transition duration-300">
+                        <svg class="w-8 h-8 text-purple-600 group-hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">Materi Terstruktur</h3>
                     <p class="text-gray-600 leading-relaxed">Materi disusun rapi per tingkat kelas. Dilengkapi dengan rangkuman teori, contoh soal, dan pembahasan interaktif.</p>
                 </div>
                 <!-- Fitur 2 -->
                 <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition duration-300 border border-gray-100 hover:border-blue-300 transform md:-translate-y-4 group">
-                    <div class="w-16 h-16 bg-blue-50 group-hover:bg-blue-600 rounded-2xl flex items-center justify-center text-3xl mb-6 transition duration-300">
-                        <span class="group-hover:scale-110 transition">🔒</span>
+                    <div class="w-16 h-16 bg-blue-50 group-hover:bg-blue-600 rounded-2xl flex items-center justify-center mb-6 transition duration-300">
+                        <svg class="w-8 h-8 text-blue-600 group-hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">Sistem Gembok Otomatis</h3>
                     <p class="text-gray-600 leading-relaxed">Tidak bisa lompat materi sembarangan! Kamu wajib lulus kuis minimal skor 70 untuk membuka materi selanjutnya.</p>
                 </div>
                 <!-- Fitur 3 -->
                 <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition duration-300 border border-gray-100 hover:border-pink-300 group">
-                    <div class="w-16 h-16 bg-pink-50 group-hover:bg-pink-500 rounded-2xl flex items-center justify-center text-3xl mb-6 transition duration-300">
-                        <span class="group-hover:scale-110 transition">⚔️</span>
+                    <div class="w-16 h-16 bg-pink-50 group-hover:bg-pink-600 rounded-2xl flex items-center justify-center mb-6 transition duration-300">
+                        <svg class="w-8 h-8 text-pink-500 group-hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">Boss Fight Ujian Akhir</h3>
                     <p class="text-gray-600 leading-relaxed">Buktikan semua pemahamanmu di Ujian Akhir Modul. Nilaimu akan terekam secara otomatis di rekap guru.</p>
@@ -148,24 +170,31 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @isset($data_modul)
                     @forelse($data_modul as $modul)
-                        <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden border border-gray-100 flex flex-col">
-                            @if($modul->gambar_modul)
-                                <img src="{{ asset('storage/' . $modul->gambar_modul) }}" alt="Cover" class="w-full h-48 object-cover">
-                            @else
-                                <div class="w-full h-48 bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center text-5xl">
-                                    📘
-                                </div>
-                            @endif
-                            <div class="p-6 flex-grow">
-                                <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-md mb-3 inline-block">
+                        <div class="bg-white rounded-3xl shadow-sm hover:shadow-lg transition overflow-hidden border border-gray-100 flex flex-col group">
+                            
+                            <!-- Cover Area dengan Aspek Rasio 2:1 -->
+                            <div class="w-full aspect-[2/1] bg-gray-100 relative overflow-hidden">
+                                @if($modul->gambar_modul)
+                                    <img src="{{ asset('storage/' . $modul->gambar_modul) }}" alt="Cover" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                @else
+                                    <!-- Placeholder Konsisten -->
+                                    <img src="https://placehold.co/800x400/f3f4f6/a8a29e?text=Sampul+Modul" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Sampul Modul">
+                                @endif
+                                <div class="absolute top-3 right-3 bg-white/90 backdrop-blur text-purple-700 font-bold px-3 py-1 rounded-lg text-xs shadow-sm z-20">
                                     Kelas {{ $modul->tingkat_kelas }}
-                                </span>
-                                <h3 class="font-black text-xl text-gray-800 mb-2">{{ $modul->judul_modul }}</h3>
+                                </div>
+                            </div>
+                            
+                            <div class="p-6 flex-grow">
+                                <h3 class="font-black text-xl text-gray-800 mb-2 group-hover:text-purple-600 transition-colors">{{ $modul->judul_modul }}</h3>
                                 <p class="text-gray-500 text-sm line-clamp-2">{{ $modul->deskripsi }}</p>
                             </div>
                         </div>
                     @empty
-                        <div class="col-span-3 text-center py-10 bg-white rounded-2xl border border-dashed border-gray-300">
+                        <div class="col-span-3 text-center py-16 bg-white rounded-3xl border border-dashed border-gray-300">
+                            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                            </svg>
                             <p class="text-gray-500 font-medium">Modul pembelajaran sedang disiapkan oleh Admin.</p>
                         </div>
                     @endforelse
